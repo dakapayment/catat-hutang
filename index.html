@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DAKA ECOSYSTEM - Catatan Hutang & Piutang</title>
+  
+  <!-- Tailwind CSS & Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            daka: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              200: '#bae0fd',
+              300: '#7cc5fb',
+              400: '#38a5f8',
+              500: '#1e88e5',
+              600: '#1976d2',
+              primary: '#1565c0', /* Warna Utama */
+              dark: '#0d47a1',
+              surface: '#ffffff'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Transisi halus & kustom scrollbar bernuansa cerah */
+    * {
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Splash intro berlatar putih dengan aksen #1565c0 */
+    #splash-intro {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at center, #ffffff 0%, #f0f7ff 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.25s ease-out, visibility 0.25s ease-out;
+    }
+    #splash-intro.hide-splash {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-[#1565c0] selection:text-white antialiased">
+
+  <!-- Splash Intro 0.1 Detik Logo DAKA ECOSYSTEM -->
+  <div id="splash-intro">
+    <div class="flex flex-col items-center animate-pulse">
+      <div class="relative w-24 h-24 mb-4 flex items-center justify-center">
+        <div class="absolute inset-0 bg-[#1565c0]/15 rounded-3xl blur-xl"></div>
+        <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#1565c0] via-blue-600 to-sky-400 p-[2.5px] shadow-xl flex items-center justify-center">
+          <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center shadow-inner">
+            <svg class="w-10 h-10 text-[#1565c0]" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 8H26C33.732 8 40 14.268 40 22C40 29.732 33.732 36 26 36H12V8Z" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="26" cy="22" r="4.5" fill="currentColor"/>
+              <path d="M6 42L42 6" stroke="#1565c0" stroke-width="3.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <h1 class="text-2xl font-extrabold tracking-wider text-[#1565c0]">
+        DAKA ECOSYSTEM
+      </h1>
+      <p class="text-xs text-slate-500 mt-1 uppercase tracking-widest font-semibold">Financial Management Core</p>
+    </div>
+  </div>
+
+  <!-- Toast Notification Pop-up -->
+  <div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-sm max-w-sm pointer-events-none bg-white border-slate-200">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-lg text-[#1565c0]"></i>
+    <span id="toast-message" class="font-medium text-slate-700"></span>
+  </div>
+
+  <!-- Modal Konfirmasi Kustom (Bebas dari window.alert & window.confirm) -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 max-w-sm w-full shadow-2xl text-center transform scale-95 transition-transform duration-200" id="confirm-box">
+      <div id="confirm-icon" class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 text-xl shadow-sm border border-rose-100">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 id="confirm-title" class="text-lg font-bold text-slate-900 mb-2">Konfirmasi Tindakan</h3>
+      <p id="confirm-desc" class="text-sm text-slate-600 mb-6 leading-relaxed">Apakah Anda yakin ingin melakukan tindakan ini?</p>
+      <div class="flex gap-3">
+        <button id="confirm-btn-cancel" class="flex-1 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition">Batal</button>
+        <button id="confirm-btn-ok" class="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm shadow-md shadow-rose-600/20 transition">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Navigation Header (Putih dengan aksen #1565c0) -->
+  <header id="main-header" class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Brand Logo & Title -->
+        <div class="flex items-center gap-3 cursor-pointer select-none" onclick="switchTab('hutang')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#1565c0] to-blue-500 p-[2px] flex items-center justify-center shadow-md shadow-[#1565c0]/20">
+            <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-center">
+              <svg class="w-5 h-5 text-[#1565c0]" viewBox="0 0 48 48" fill="none">
+                <path d="M12 8H26C33.732 8 40 14.268 40 22C40 29.732 33.732 36 26 36H12V8Z" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="26" cy="22" r="4.5" fill="currentColor"/>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div class="font-extrabold text-base tracking-tight text-slate-900 flex items-center gap-1.5">
+              DAKA <span class="text-[10px] bg-blue-50 text-[#1565c0] px-2 py-0.5 rounded-full font-bold border border-blue-200/80 tracking-wider">ECOSYSTEM</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium">Buku Catatan Hutang</p>
+          </div>
+        </div>
+
+        <!-- Navigation Menus (Hutang & Akun) -->
+        <nav class="flex items-center gap-2">
+          <button id="nav-btn-hutang" onclick="switchTab('hutang')" class="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-[#1565c0] text-[#1565c0] bg-blue-50 shadow-sm">
+            <i class="fa-solid fa-book-bookmark"></i>
+            <span>Hutang</span>
+          </button>
+          <button id="nav-btn-akun" onclick="switchTab('akun')" class="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-transparent text-slate-600 hover:text-[#1565c0] hover:bg-slate-100">
+            <i class="fa-solid fa-user-circle"></i>
+            <span>Akun</span>
+          </button>
+        </nav>
+
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col justify-center">
+    
+    <!-- Auth View (Muncul jika belum login) -->
+    <div id="view-auth" class="w-full max-w-md mx-auto py-6">
+      <div class="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50">
+        
+        <!-- Auth Header -->
+        <div class="text-center mb-6">
+          <div class="inline-flex w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 items-center justify-center text-[#1565c0] mb-3 shadow-sm">
+            <i class="fa-solid fa-shield-halved text-2xl"></i>
+          </div>
+          <h2 id="auth-heading" class="text-2xl font-bold text-slate-900">Masuk ke Akun Anda</h2>
+          <p id="auth-subheading" class="text-xs text-slate-500 mt-1">Data Anda tersimpan terpisah dan aman di Google Sheets</p>
+        </div>
+
+        <!-- Auth Tabs (Login / Register) -->
+        <div class="grid grid-cols-2 p-1 bg-slate-100 rounded-2xl mb-6 border border-slate-200">
+          <button id="tab-btn-login" onclick="toggleAuthMode('login')" class="py-2 text-xs sm:text-sm font-semibold rounded-xl bg-[#1565c0] text-white shadow-sm transition">Masuk</button>
+          <button id="tab-btn-register" onclick="toggleAuthMode('register')" class="py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Daftar Baru</button>
+        </div>
+
+        <!-- Auth Form -->
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+          
+          <div id="field-nama-wrapper" class="hidden">
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-regular fa-user"></i></span>
+              <input type="text" id="auth-nama" placeholder="Contoh: Budi Pratama" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Alamat Email</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-regular fa-envelope"></i></span>
+              <input type="email" id="auth-email" required placeholder="nama@email.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kata Sandi</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-lock"></i></span>
+              <input type="password" id="auth-password" required placeholder="Minimal 6 karakter" class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
+              <button type="button" onclick="togglePasswordVisibility('auth-password', this)" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" id="auth-submit-btn" class="w-full py-3 px-4 bg-[#1565c0] hover:bg-[#0d47a1] text-white font-semibold text-sm rounded-xl shadow-lg shadow-[#1565c0]/25 active:scale-[0.99] transition flex items-center justify-center gap-2">
+            <span id="auth-submit-text">Masuk Sekarang</span>
+            <i id="auth-spinner" class="fa-solid fa-circle-notch fa-spin hidden"></i>
+          </button>
+        </form>
+
+        <!-- Status Koneksi Database Terhubung Otomatis -->
+        <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-center text-xs text-slate-500">
+          <span class="flex items-center gap-2 font-medium">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Terhubung ke Database DAKA</span>
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- View Hutang (Main Dashboard) -->
+    <div id="view-hutang" class="hidden space-y-6">
+      
+      <!-- Top Bar Welcome & Add Button -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm">
+        <div>
+          <span class="text-xs font-bold text-[#1565c0] tracking-wider uppercase bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100">Financial Hub</span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-2 flex items-center gap-2">
+            Halo, <span id="user-display-name" class="text-[#1565c0]">Pengguna</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Kelola piutang yang harus ditagih dan hutang yang wajib dibayar.</p>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <button onclick="fetchTransactions()" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-semibold transition" title="Segarkan Data">
+            <i id="refresh-icon" class="fa-solid fa-arrow-rotate-right"></i>
+          </button>
+          <button onclick="openAddTransactionModal()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1565c0] hover:bg-[#0d47a1] text-white text-sm font-semibold rounded-xl shadow-md shadow-[#1565c0]/20 transition">
+            <i class="fa-solid fa-plus"></i>
+            <span>Catat Baru</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Financial Metrics Summary Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Card 1: Total Piutang -->
+        <div class="bg-white border border-blue-100 p-5 rounded-3xl shadow-sm hover:shadow-md transition relative overflow-hidden group">
+          <div class="absolute -right-3 -top-3 w-16 h-16 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition"></div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#1565c0]">Piutang (Uang di Luar)</span>
+            <span class="w-9 h-9 rounded-xl bg-blue-50 text-[#1565c0] border border-blue-100 flex items-center justify-center text-sm shadow-sm">
+              <i class="fa-solid fa-arrow-down-left"></i>
+            </span>
+          </div>
+          <div id="stat-total-piutang" class="text-2xl font-black text-slate-900">Rp 0</div>
+          <div class="text-xs text-slate-500 mt-1 flex items-center gap-1 font-medium">
+            <span id="stat-count-piutang" class="font-bold text-[#1565c0]">0</span> tagihan belum lunas
+          </div>
+        </div>
+
+        <!-- Card 2: Total Hutang -->
+        <div class="bg-white border border-rose-100 p-5 rounded-3xl shadow-sm hover:shadow-md transition relative overflow-hidden group">
+          <div class="absolute -right-3 -top-3 w-16 h-16 bg-rose-500/10 rounded-full blur-xl group-hover:bg-rose-500/20 transition"></div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-rose-600">Hutang (Wajib Dibayar)</span>
+            <span class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center text-sm shadow-sm">
+              <i class="fa-solid fa-arrow-up-right"></i>
+            </span>
+          </div>
+          <div id="stat-total-hutang" class="text-2xl font-black text-slate-900">Rp 0</div>
+          <div class="text-xs text-slate-500 mt-1 flex items-center gap-1 font-medium">
+            <span id="stat-count-hutang" class="font-bold text-rose-600">0</span> tanggungan belum lunas
+          </div>
+        </div>
+
+        <!-- Card 3: Saldo Bersih Estimasi -->
+        <div class="bg-white border border-slate-200 p-5 rounded-3xl shadow-sm hover:shadow-md transition relative overflow-hidden group">
+          <div class="absolute -right-3 -top-3 w-16 h-16 bg-[#1565c0]/10 rounded-full blur-xl group-hover:bg-[#1565c0]/20 transition"></div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Posisi Bersih</span>
+            <span class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center text-sm shadow-sm">
+              <i class="fa-solid fa-scale-balanced"></i>
+            </span>
+          </div>
+          <div id="stat-netto" class="text-2xl font-black text-[#1565c0]">Rp 0</div>
+          <p class="text-xs text-slate-500 mt-1 font-medium">Selisih piutang aktif dengan hutang</p>
+        </div>
+      </div>
+
+      <!-- Filter, Search and Listing Container -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-4 sm:p-6 space-y-4 shadow-sm">
+        
+        <!-- Controls: Search & Filter Tabs -->
+        <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+          <!-- Search box -->
+          <div class="relative flex-1 max-w-md">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input type="text" id="search-input" oninput="renderTransactionsList()" placeholder="Cari nama kontak atau catatan..." class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
+          </div>
+
+          <!-- Type Filters -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            <button onclick="setFilterType('all')" id="filter-all" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#1565c0] text-white shadow-sm">Semua</button>
+            <button onclick="setFilterType('piutang')" id="filter-piutang" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:text-slate-900">Piutang</button>
+            <button onclick="setFilterType('hutang')" id="filter-hutang" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:text-slate-900">Hutang</button>
+            <button onclick="setFilterStatus('belum_lunas')" id="filter-status" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100">Belum Lunas</button>
+          </div>
+        </div>
+
+        <!-- Transactions List -->
+        <div id="tx-container" class="min-h-[220px]">
+          <!-- Diisi via JavaScript -->
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- View Akun -->
+    <div id="view-akun" class="hidden max-w-2xl mx-auto w-full space-y-6">
+      
+      <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 pb-6 border-b border-slate-100 text-center sm:text-left">
+          <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#1565c0] to-sky-500 p-[2.5px] shadow-lg shadow-[#1565c0]/20">
+            <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center text-3xl text-[#1565c0] font-black" id="profile-avatar">
+              U
+            </div>
+          </div>
+          <div class="flex-1">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-[#1565c0] border border-blue-100 mb-1.5">
+              <span class="w-2 h-2 rounded-full bg-[#1565c0] animate-pulse"></span>
+              DAKA Member
+            </div>
+            <h2 id="profile-nama" class="text-xl font-bold text-slate-900">Memuat nama...</h2>
+            <p id="profile-email" class="text-sm text-slate-500">email@example.com</p>
+            <div class="text-xs text-slate-400 mt-2">
+              User ID: <span id="profile-userid" class="font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">USR-XXXXXX</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Settings & Information -->
+        <div class="py-6 space-y-4">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Pengaturan Akun</h3>
+
+          <!-- Edit Profile Form -->
+          <form onsubmit="handleProfileUpdate(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Perbarui Nama Pengguna</label>
+              <input type="text" id="edit-profile-nama" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Ganti Kata Sandi (Opsional)</label>
+              <input type="password" id="edit-profile-password" placeholder="Kosongkan jika tidak ingin mengubah" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15">
+            </div>
+
+            <button type="submit" id="btn-save-profile" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-[#1565c0] font-semibold text-sm rounded-xl transition flex items-center justify-center gap-2 border border-slate-200">
+              <i class="fa-regular fa-floppy-disk"></i>
+              <span>Simpan Perubahan</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Logout Action -->
+        <div class="pt-4 border-t border-slate-100">
+          <button onclick="triggerLogout()" class="w-full py-3 px-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-sm transition flex items-center justify-center gap-2 border border-rose-100">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Keluar dari Akun</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Modal Tambah Transaksi -->
+  <div id="modal-add-tx" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl relative">
+      
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Catat Hutang / Piutang</h3>
+          <p class="text-xs text-slate-500">Pilih jenis dan rincian transaksi Anda</p>
+        </div>
+        <button onclick="closeAddTransactionModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleCreateTransaction(event)" class="space-y-4">
+        
+        <!-- Pilihan Tipe: Piutang vs Hutang -->
+        <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-2xl border border-slate-200">
+          <label class="flex items-center justify-center gap-2 py-2.5 rounded-xl cursor-pointer text-xs font-semibold text-slate-600 has-[:checked]:bg-[#1565c0] has-[:checked]:text-white transition shadow-sm">
+            <input type="radio" name="tx-tipe" value="piutang" checked class="hidden">
+            <i class="fa-solid fa-arrow-down-left"></i>
+            <span>Piutang (Dia Pinjam)</span>
+          </label>
+          <label class="flex items-center justify-center gap-2 py-2.5 rounded-xl cursor-pointer text-xs font-semibold text-slate-600 has-[:checked]:bg-rose-600 has-[:checked]:text-white transition shadow-sm">
+            <input type="radio" name="tx-tipe" value="hutang" class="hidden">
+            <i class="fa-solid fa-arrow-up-right"></i>
+            <span>Hutang (Saya Pinjam)</span>
+          </label>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Orang / Kontak</label>
+          <input type="text" id="tx-nama-kontak" required placeholder="Contoh: Andi Pratama" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nominal (Rupiah)</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-slate-500">Rp</span>
+            <input type="number" id="tx-nominal" min="1" required placeholder="100000" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tanggal Jatuh Tempo</label>
+          <input type="date" id="tx-jatuh-tempo" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Catatan / Keperluan (Opsional)</label>
+          <textarea id="tx-catatan" rows="2" placeholder="Contoh: Pinjaman modal usaha / beli tiket" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15"></textarea>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeAddTransactionModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm">Batal</button>
+          <button type="submit" id="btn-submit-tx" class="flex-1 py-2.5 rounded-xl bg-[#1565c0] hover:bg-[#0d47a1] text-white font-semibold text-sm shadow-md shadow-[#1565c0]/20 flex items-center justify-center gap-2">
+            <span>Simpan</span>
+            <i id="tx-spinner" class="fa-solid fa-circle-notch fa-spin hidden"></i>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // URL Backend Google Apps Script Database DAKA ECOSYSTEM
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwH9h0XFMbDBSi6VkPDgdl0QAmuPDkwtbXDOS2rZMhIFLtFn6s4rfwfhgVTtV1UIHQy/exec";
+    const SESSION_KEY = "daka_active_user";
+    const DEMO_TX_KEY = "daka_demo_transactions";
+
+    let state = {
+      scriptUrl: SCRIPT_URL,
+      currentUser: JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null"),
+      transactions: [],
+      filterType: "all",      // 'all', 'piutang', 'hutang'
+      filterStatus: "all",    // 'all', 'belum_lunas'
+      activeTab: "hutang"     // 'hutang', 'akun'
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      // Intro logo DAKA ECOSYSTEM tepat 0.1 detik (100 milidetik) sesuai spesifikasi
+      setTimeout(() => {
+        const splash = document.getElementById("splash-intro");
+        if (splash) {
+          splash.classList.add("hide-splash");
+        }
+      }, 100);
+
+      // Inisialisasi tampilan berdasarkan autentikasi
+      initApp();
+    });
+
+    function initApp() {
+      if (state.currentUser) {
+        showMainApp();
+      } else {
+        showAuthView();
+      }
+    }
+
+    function showAuthView() {
+      document.getElementById("view-auth").classList.remove("hidden");
+      document.getElementById("view-hutang").classList.add("hidden");
+      document.getElementById("view-akun").classList.add("hidden");
+    }
+
+    function showMainApp() {
+      document.getElementById("view-auth").classList.add("hidden");
+      document.getElementById("user-display-name").innerText = state.currentUser.nama || "Pengguna";
+      
+      // Update profil akun
+      document.getElementById("profile-nama").innerText = state.currentUser.nama || "-";
+      document.getElementById("profile-email").innerText = state.currentUser.email || "-";
+      document.getElementById("profile-userid").innerText = state.currentUser.user_id || "-";
+      document.getElementById("edit-profile-nama").value = state.currentUser.nama || "";
+      document.getElementById("profile-avatar").innerText = (state.currentUser.nama || "U").charAt(0).toUpperCase();
+
+      switchTab(state.activeTab);
+      fetchTransactions();
+    }
+
+    function switchTab(tabName) {
+      if (!state.currentUser) {
+        showToast("Silakan masuk terlebih dahulu", "info");
+        return;
+      }
+
+      state.activeTab = tabName;
+      const btnHutang = document.getElementById("nav-btn-hutang");
+      const btnAkun = document.getElementById("nav-btn-akun");
+      const viewHutang = document.getElementById("view-hutang");
+      const viewAkun = document.getElementById("view-akun");
+
+      if (tabName === "hutang") {
+        viewHutang.classList.remove("hidden");
+        viewAkun.classList.add("hidden");
+
+        btnHutang.className = "flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-[#1565c0] text-[#1565c0] bg-blue-50 shadow-sm";
+        btnAkun.className = "flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-transparent text-slate-600 hover:text-[#1565c0] hover:bg-slate-100";
+      } else {
+        viewHutang.classList.add("hidden");
+        viewAkun.classList.remove("hidden");
+
+        btnAkun.className = "flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-[#1565c0] text-[#1565c0] bg-blue-50 shadow-sm";
+        btnHutang.className = "flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-transparent text-slate-600 hover:text-[#1565c0] hover:bg-slate-100";
+      }
+    }
+
+    let authMode = "login";
+    function toggleAuthMode(mode) {
+      authMode = mode;
+      const heading = document.getElementById("auth-heading");
+      const subheading = document.getElementById("auth-subheading");
+      const submitText = document.getElementById("auth-submit-text");
+      const btnLogin = document.getElementById("tab-btn-login");
+      const btnRegister = document.getElementById("tab-btn-register");
+      const fieldNama = document.getElementById("field-nama-wrapper");
+
+      if (mode === "login") {
+        heading.innerText = "Masuk ke Akun Anda";
+        subheading.innerText = "Data tersinkronisasi aman dengan database Google Sheets Anda";
+        submitText.innerText = "Masuk Sekarang";
+        fieldNama.classList.add("hidden");
+        document.getElementById("auth-nama").required = false;
+
+        btnLogin.className = "py-2 text-xs sm:text-sm font-semibold rounded-xl bg-[#1565c0] text-white shadow-sm transition";
+        btnRegister.className = "py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition";
+      } else {
+        heading.innerText = "Buat Akun Member Baru";
+        subheading.innerText = "Setiap akun memiliki buku hutang piutang pribadi tersendiri";
+        submitText.innerText = "Daftar Akun DAKA";
+        fieldNama.classList.remove("hidden");
+        document.getElementById("auth-nama").required = true;
+
+        btnRegister.className = "py-2 text-xs sm:text-sm font-semibold rounded-xl bg-[#1565c0] text-white shadow-sm transition";
+        btnLogin.className = "py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition";
+      }
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      const email = document.getElementById("auth-email").value.trim();
+      const password = document.getElementById("auth-password").value;
+      const nama = document.getElementById("auth-nama").value.trim();
+
+      const spinner = document.getElementById("auth-spinner");
+      const submitBtn = document.getElementById("auth-submit-btn");
+
+      spinner.classList.remove("hidden");
+      submitBtn.disabled = true;
+
+      try {
+        if (!state.scriptUrl) {
+          // Fallback ke Simulasi Offline jika pengguna belum menyetel Apps Script URL
+          simulateAuth(email, password, nama);
+          return;
+        }
+
+        const payload = {
+          action: authMode === "login" ? "login" : "register",
+          email: email,
+          password: password,
+          nama: nama
+        };
+
+        const response = await fetch(state.scriptUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          state.currentUser = result.user;
+          sessionStorage.setItem(SESSION_KEY, JSON.stringify(result.user));
+          showToast(result.message || "Berhasil masuk!", "success");
+          showMainApp();
+        } else {
+          showToast(result.message || "Gagal memproses", "error");
+        }
+      } catch (err) {
+        showToast("Terjadi kendala jaringan. Periksa kembali URL Google Apps Script Anda.", "error");
+      } finally {
+        spinner.classList.add("hidden");
+        submitBtn.disabled = false;
+      }
+    }
+
+    // Simulasi offline cepat jika belum konfigurasi Google Sheet
+    function simulateAuth(email, password, nama) {
+      setTimeout(() => {
+        const mockUser = {
+          user_id: "USR-" + Math.floor(100000 + Math.random() * 900000),
+          nama: nama || email.split("@")[0],
+          email: email,
+          created_at: new Date().toISOString()
+        };
+        state.currentUser = mockUser;
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify(mockUser));
+        showToast("Mode Demo Aktif: Masuk sebagai " + mockUser.nama, "info");
+        showMainApp();
+      }, 400);
+    }
+
+    async function fetchTransactions() {
+      if (!state.currentUser) return;
+
+      const refreshIcon = document.getElementById("refresh-icon");
+      if (refreshIcon) refreshIcon.classList.add("fa-spin");
+
+      try {
+        if (!state.scriptUrl) {
+          // Ambil dari penyimpanan demo browser
+          const localData = JSON.parse(localStorage.getItem(DEMO_TX_KEY + "_" + state.currentUser.user_id) || "[]");
+          state.transactions = localData;
+          calculateStats();
+          renderTransactionsList();
+          return;
+        }
+
+        const response = await fetch(state.scriptUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "get_transactions",
+            user_id: state.currentUser.user_id
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          state.transactions = result.data || [];
+          calculateStats();
+          renderTransactionsList();
+        } else {
+          showToast(result.message || "Gagal mengambil data", "error");
+        }
+      } catch (e) {
+        showToast("Gagal menyambung ke server Google Sheet", "error");
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove("fa-spin");
+      }
+    }
+
+    function calculateStats() {
+      let totalPiutang = 0;
+      let countPiutang = 0;
+      let totalHutang = 0;
+      let countHutang = 0;
+
+      state.transactions.forEach(t => {
+        const nominal = Number(t.nominal) || 0;
+        if (t.tipe === "piutang") {
+          if (t.status === "belum_lunas") {
+            totalPiutang += nominal;
+            countPiutang++;
+          }
+        } else if (t.tipe === "hutang") {
+          if (t.status === "belum_lunas") {
+            totalHutang += nominal;
+            countHutang++;
+          }
+        }
+      });
+
+      const netto = totalPiutang - totalHutang;
+
+      document.getElementById("stat-total-piutang").innerText = formatRupiah(totalPiutang);
+      document.getElementById("stat-count-piutang").innerText = countPiutang;
+      document.getElementById("stat-total-hutang").innerText = formatRupiah(totalHutang);
+      document.getElementById("stat-count-hutang").innerText = countHutang;
+      
+      const nettoEl = document.getElementById("stat-netto");
+      nettoEl.innerText = (netto >= 0 ? "+" : "") + formatRupiah(netto);
+      nettoEl.className = "text-2xl font-black " + (netto >= 0 ? "text-[#1565c0]" : "text-rose-600");
+    }
+
+    function renderTransactionsList() {
+      const container = document.getElementById("tx-container");
+      const searchKeyword = (document.getElementById("search-input").value || "").toLowerCase();
+
+      // Filter data
+      let filtered = state.transactions.filter(t => {
+        if (state.filterType !== "all" && t.tipe !== state.filterType) return false;
+        if (state.filterStatus === "belum_lunas" && t.status !== "belum_lunas") return false;
+        const nameMatch = (t.nama_kontak || "").toLowerCase().includes(searchKeyword);
+        const notesMatch = (t.catatan || "").toLowerCase().includes(searchKeyword);
+        return nameMatch || notesMatch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 px-4 border border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+            <div class="w-14 h-14 rounded-2xl bg-white text-[#1565c0] flex items-center justify-center mx-auto mb-3 shadow-sm border border-slate-200">
+              <i class="fa-solid fa-folder-open text-2xl"></i>
+            </div>
+            <h4 class="text-sm font-bold text-slate-800">Tidak ada catatan hutang/piutang</h4>
+            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Klik tombol "Catat Baru" di atas untuk menambahkan catatan transaksi pertama Anda.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Render cards dengan latar putih dan border halus
+      let html = '<div class="space-y-3">';
+      filtered.forEach(t => {
+        const isPiutang = t.tipe === "piutang";
+        const isLunas = t.status === "lunas";
+
+        html += `
+          <div class="p-4 sm:p-5 rounded-2xl bg-white border ${isLunas ? 'border-slate-200/80 opacity-70 bg-slate-50/40' : 'border-slate-200'} hover:border-[#1565c0]/50 hover:shadow-md transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            
+            <div class="flex items-start gap-3.5 flex-1">
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 mt-0.5 shadow-sm border ${isPiutang ? 'bg-blue-50 text-[#1565c0] border-blue-100' : 'bg-rose-50 text-rose-600 border-rose-100'}">
+                <i class="fa-solid ${isPiutang ? 'fa-arrow-down-left' : 'fa-arrow-up-right'} text-base"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-bold text-slate-900 text-sm sm:text-base">${escapeHTML(t.nama_kontak)}</span>
+                  <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${isPiutang ? 'bg-blue-50 text-[#1565c0] border border-blue-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}">
+                    ${isPiutang ? 'Piutang' : 'Hutang'}
+                  </span>
+                  <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${isLunas ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'}">
+                    ${isLunas ? 'Lunas' : 'Belum Lunas'}
+                  </span>
+                </div>
+                <div class="text-xs text-slate-500 mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
+                  <span><i class="fa-regular fa-calendar text-slate-400 mr-1.5"></i>Jatuh Tempo: <strong>${t.jatuh_tempo || '-'}</strong></span>
+                  ${t.catatan && t.catatan !== '-' ? `<span><i class="fa-regular fa-comment text-slate-400 mr-1.5"></i>${escapeHTML(t.catatan)}</span>` : ''}
+                </div>
+              </div>
+            </div>
+
+            <!-- Amount & Actions -->
+            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+              <div class="text-left sm:text-right">
+                <div class="text-base sm:text-lg font-black ${isPiutang ? 'text-[#1565c0]' : 'text-rose-600'}">
+                  ${formatRupiah(t.nominal)}
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleTransactionStatus('${t.tx_id}', '${t.status}')" class="p-2 sm:p-2.5 rounded-xl border ${isLunas ? 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100' : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'} text-xs font-semibold transition" title="${isLunas ? 'Tandai Belum Lunas' : 'Tandai Sudah Lunas'}">
+                  <i class="fa-solid ${isLunas ? 'fa-rotate-left' : 'fa-check'}"></i>
+                </button>
+                <button onclick="confirmDeleteTransaction('${t.tx_id}')" class="p-2 sm:p-2.5 rounded-xl bg-slate-100 border border-slate-200 text-rose-600 hover:bg-rose-50 hover:border-rose-200 text-xs font-semibold transition" title="Hapus Data">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    async function handleCreateTransaction(event) {
+      event.preventDefault();
+      if (!state.currentUser) return;
+
+      const tipe = document.querySelector('input[name="tx-tipe"]:checked').value;
+      const namaKontak = document.getElementById("tx-nama-kontak").value.trim();
+      const nominal = document.getElementById("tx-nominal").value;
+      const jatuhTempo = document.getElementById("tx-jatuh-tempo").value || "-";
+      const catatan = document.getElementById("tx-catatan").value.trim() || "-";
+
+      const spinner = document.getElementById("tx-spinner");
+      const submitBtn = document.getElementById("btn-submit-tx");
+      spinner.classList.remove("hidden");
+      submitBtn.disabled = true;
+
+      try {
+        if (!state.scriptUrl) {
+          // Simpan lokal mode demo
+          const newTx = {
+            tx_id: "TX-" + Math.floor(100000 + Math.random() * 900000),
+            user_id: state.currentUser.user_id,
+            tipe: tipe,
+            nama_kontak: namaKontak,
+            nominal: Number(nominal),
+            jatuh_tempo: jatuhTempo,
+            status: "belum_lunas",
+            catatan: catatan,
+            created_at: new Date().toISOString()
+          };
+          const key = DEMO_TX_KEY + "_" + state.currentUser.user_id;
+          const currentData = JSON.parse(localStorage.getItem(key) || "[]");
+          currentData.unshift(newTx);
+          localStorage.setItem(key, JSON.stringify(currentData));
+          
+          state.transactions = currentData;
+          calculateStats();
+          renderTransactionsList();
+          closeAddTransactionModal();
+          showToast("Catatan tersimpan (Mode Demo)", "success");
+          return;
+        }
+
+        const response = await fetch(state.scriptUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "add_transaction",
+            user_id: state.currentUser.user_id,
+            tipe: tipe,
+            nama_kontak: namaKontak,
+            nominal: nominal,
+            jatuh_tempo: jatuhTempo,
+            catatan: catatan
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showToast("Transaksi berhasil dicatat ke Google Sheets", "success");
+          closeAddTransactionModal();
+          fetchTransactions();
+        } else {
+          showToast(result.message || "Gagal mencatat transaksi", "error");
+        }
+      } catch (e) {
+        showToast("Kesalahan jaringan saat menyimpan data", "error");
+      } finally {
+        spinner.classList.add("hidden");
+        submitBtn.disabled = false;
+      }
+    }
+
+    async function toggleTransactionStatus(txId, currentStatus) {
+      const nextStatus = currentStatus === "lunas" ? "belum_lunas" : "lunas";
+
+      if (!state.scriptUrl) {
+        const key = DEMO_TX_KEY + "_" + state.currentUser.user_id;
+        const currentData = JSON.parse(localStorage.getItem(key) || "[]");
+        const idx = currentData.findIndex(item => item.tx_id === txId);
+        if (idx !== -1) {
+          currentData[idx].status = nextStatus;
+          localStorage.setItem(key, JSON.stringify(currentData));
+          state.transactions = currentData;
+          calculateStats();
+          renderTransactionsList();
+          showToast("Status diubah menjadi: " + (nextStatus === "lunas" ? "Lunas" : "Belum Lunas"), "success");
+        }
+        return;
+      }
+
+      try {
+        const response = await fetch(state.scriptUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "update_status",
+            user_id: state.currentUser.user_id,
+            tx_id: txId,
+            status: nextStatus
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showToast(result.message, "success");
+          fetchTransactions();
+        } else {
+          showToast(result.message || "Gagal memperbarui status", "error");
+        }
+      } catch (err) {
+        showToast("Gagal memperbarui status", "error");
+      }
+    }
+
+    function confirmDeleteTransaction(txId) {
+      showCustomConfirm(
+        "Hapus Catatan Transaksi?",
+        "Tindakan ini permanen. Baris data pada Google Sheets Anda akan terhapus.",
+        async () => {
+          if (!state.scriptUrl) {
+            const key = DEMO_TX_KEY + "_" + state.currentUser.user_id;
+            let currentData = JSON.parse(localStorage.getItem(key) || "[]");
+            currentData = currentData.filter(i => i.tx_id !== txId);
+            localStorage.setItem(key, JSON.stringify(currentData));
+            state.transactions = currentData;
+            calculateStats();
+            renderTransactionsList();
+            showToast("Data transaksi dihapus", "info");
+            return;
+          }
+
+          try {
+            const response = await fetch(state.scriptUrl, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({
+                action: "delete_transaction",
+                user_id: state.currentUser.user_id,
+                tx_id: txId
+              })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+              showToast("Data berhasil dihapus dari Google Sheets", "info");
+              fetchTransactions();
+            } else {
+              showToast(result.message || "Gagal menghapus data", "error");
+            }
+          } catch (e) {
+            showToast("Kesalahan jaringan saat menghapus", "error");
+          }
+        }
+      );
+    }
+
+    async function handleProfileUpdate(event) {
+      event.preventDefault();
+      const nama = document.getElementById("edit-profile-nama").value.trim();
+      const password = document.getElementById("edit-profile-password").value;
+
+      if (!state.scriptUrl) {
+        state.currentUser.nama = nama;
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify(state.currentUser));
+        showToast("Profil berhasil diperbarui (Mode Demo)", "success");
+        initApp();
+        return;
+      }
+
+      try {
+        const response = await fetch(state.scriptUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "update_profile",
+            user_id: state.currentUser.user_id,
+            nama: nama,
+            new_password: password
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          state.currentUser = result.user;
+          sessionStorage.setItem(SESSION_KEY, JSON.stringify(result.user));
+          showToast("Profil berhasil diperbarui", "success");
+          initApp();
+        } else {
+          showToast(result.message || "Gagal memperbarui profil", "error");
+        }
+      } catch (e) {
+        showToast("Kesalahan saat menyimpan profil", "error");
+      }
+    }
+
+    function triggerLogout() {
+      showCustomConfirm(
+        "Keluar dari Akun?",
+        "Sesi Anda akan diakhiri. Anda dapat login kembali dengan email dan kata sandi Anda.",
+        () => {
+          sessionStorage.removeItem(SESSION_KEY);
+          state.currentUser = null;
+          state.transactions = [];
+          showToast("Berhasil keluar dari akun", "info");
+          showAuthView();
+        }
+      );
+    }
+
+    function setFilterType(type) {
+      state.filterType = type;
+      ['all', 'piutang', 'hutang'].forEach(t => {
+        const el = document.getElementById('filter-' + t);
+        if (t === type) {
+          el.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#1565c0] text-white shadow-sm";
+        } else {
+          el.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:text-slate-900";
+        }
+      });
+      renderTransactionsList();
+    }
+
+    function setFilterStatus(status) {
+      if (state.filterStatus === status) {
+        state.filterStatus = "all";
+        document.getElementById("filter-status").className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100";
+      } else {
+        state.filterStatus = status;
+        document.getElementById("filter-status").className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-600 text-white shadow-sm";
+      }
+      renderTransactionsList();
+    }
+
+    function openAddTransactionModal() {
+      document.getElementById("tx-nama-kontak").value = "";
+      document.getElementById("tx-nominal").value = "";
+      document.getElementById("tx-catatan").value = "";
+      document.getElementById("tx-jatuh-tempo").value = new Date().toISOString().split("T")[0];
+      document.getElementById("modal-add-tx").classList.remove("hidden");
+    }
+
+    function closeAddTransactionModal() {
+      document.getElementById("modal-add-tx").classList.add("hidden");
+    }
+
+    function showToast(message, type = "success") {
+      const toast = document.getElementById("toast");
+      const msgEl = document.getElementById("toast-message");
+      const iconEl = document.getElementById("toast-icon");
+
+      msgEl.innerText = message;
+
+      if (type === "success") {
+        toast.className = "fixed top-5 right-5 z-50 transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-sm max-w-sm bg-white border-blue-200 text-[#1565c0]";
+        iconEl.className = "fa-solid fa-circle-check text-lg text-[#1565c0]";
+      } else if (type === "error") {
+        toast.className = "fixed top-5 right-5 z-50 transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-sm max-w-sm bg-white border-rose-200 text-rose-600";
+        iconEl.className = "fa-solid fa-circle-xmark text-lg text-rose-600";
+      } else {
+        toast.className = "fixed top-5 right-5 z-50 transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-sm max-w-sm bg-white border-slate-200 text-slate-700";
+        iconEl.className = "fa-solid fa-circle-info text-lg text-[#1565c0]";
+      }
+
+      toast.classList.remove("translate-x-full");
+
+      setTimeout(() => {
+        toast.classList.add("translate-x-full");
+      }, 3500);
+    }
+
+    let onConfirmCallback = null;
+    function showCustomConfirm(title, desc, onConfirm) {
+      document.getElementById("confirm-title").innerText = title;
+      document.getElementById("confirm-desc").innerText = desc;
+      onConfirmCallback = onConfirm;
+      document.getElementById("confirm-modal").classList.remove("hidden");
+    }
+
+    document.getElementById("confirm-btn-cancel").addEventListener("click", () => {
+      document.getElementById("confirm-modal").classList.add("hidden");
+      onConfirmCallback = null;
+    });
+
+    document.getElementById("confirm-btn-ok").addEventListener("click", () => {
+      document.getElementById("confirm-modal").classList.add("hidden");
+      if (typeof onConfirmCallback === "function") {
+        onConfirmCallback();
+      }
+      onConfirmCallback = null;
+    });
+
+    function togglePasswordVisibility(fieldId, btn) {
+      const field = document.getElementById(fieldId);
+      const icon = btn.querySelector("i");
+      if (field.type === "password") {
+        field.type = "text";
+        icon.className = "fa-regular fa-eye-slash";
+      } else {
+        field.type = "password";
+        icon.className = "fa-regular fa-eye";
+      }
+    }
+
+    function formatRupiah(num) {
+      return "Rp " + Number(num || 0).toLocaleString("id-ID");
+    }
+
+    function escapeHTML(str) {
+      if (!str) return "";
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+  </script>
+</body>
+</html>
