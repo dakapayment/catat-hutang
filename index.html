@@ -30,7 +30,7 @@
               400: '#38a5f8',
               500: '#1e88e5',
               600: '#1976d2',
-              primary: '#1565c0', /* Warna Utama */
+              primary: '#1565c0',
               dark: '#0d47a1',
               surface: '#ffffff'
             }
@@ -41,7 +41,6 @@
   </script>
 
   <style>
-    /* Transisi halus & kustom scrollbar bernuansa cerah */
     * {
       transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
@@ -60,7 +59,6 @@
       background: #94a3b8;
     }
     
-    /* Splash intro berlatar putih dengan aksen #1565c0 */
     #splash-intro {
       position: fixed;
       inset: 0;
@@ -103,6 +101,21 @@
     </div>
   </div>
 
+  <!-- Global Action Loading Overlay -->
+  <div id="global-loader" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-opacity">
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 max-w-sm w-full shadow-2xl text-center flex flex-col items-center">
+      <div class="relative w-16 h-16 mb-4 flex items-center justify-center">
+        <div class="absolute inset-0 rounded-full border-4 border-blue-100 animate-pulse"></div>
+        <div class="w-16 h-16 rounded-full border-4 border-[#1565c0] border-t-transparent animate-spin"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <i id="global-loader-icon" class="fa-solid fa-arrows-rotate text-lg text-[#1565c0]"></i>
+        </div>
+      </div>
+      <h3 id="global-loader-title" class="text-base font-bold text-slate-900 mb-1">Sedang Memproses...</h3>
+      <p id="global-loader-desc" class="text-xs text-slate-500 leading-relaxed">Menyinkronkan data dengan database DAKA...</p>
+    </div>
+  </div>
+
   <!-- Toast Notification Pop-up -->
   <div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-sm max-w-sm pointer-events-none bg-white border-slate-200">
     <i id="toast-icon" class="fa-solid fa-circle-check text-lg text-[#1565c0]"></i>
@@ -124,13 +137,13 @@
     </div>
   </div>
 
-  <!-- Top Navigation Header (Putih dengan aksen #1565c0) -->
-  <header id="main-header" class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+  <!-- Top Navigation Header -->
+  <header id="main-header" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         
         <!-- Brand Logo & Title -->
-        <div class="flex items-center gap-3 cursor-pointer select-none" onclick="switchTab('hutang')">
+        <div class="flex items-center gap-3 cursor-pointer select-none" onclick="navigateTo('hutang')">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#1565c0] to-blue-500 p-[2px] flex items-center justify-center shadow-md shadow-[#1565c0]/20">
             <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-center">
               <svg class="w-5 h-5 text-[#1565c0]" viewBox="0 0 48 48" fill="none">
@@ -147,13 +160,13 @@
           </div>
         </div>
 
-        <!-- Navigation Menus (Hutang & Akun) -->
+        <!-- Navigation Menus -->
         <nav class="flex items-center gap-2">
-          <button id="nav-btn-hutang" onclick="switchTab('hutang')" class="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-[#1565c0] text-[#1565c0] bg-blue-50 shadow-sm">
+          <button id="nav-btn-hutang" onclick="navigateTo('hutang')" class="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-[#1565c0] text-[#1565c0] bg-blue-50 shadow-sm">
             <i class="fa-solid fa-book-bookmark"></i>
             <span>Hutang</span>
           </button>
-          <button id="nav-btn-akun" onclick="switchTab('akun')" class="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-transparent text-slate-600 hover:text-[#1565c0] hover:bg-slate-100">
+          <button id="nav-btn-akun" onclick="navigateTo('akun')" class="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-transparent text-slate-600 hover:text-[#1565c0] hover:bg-slate-100">
             <i class="fa-solid fa-user-circle"></i>
             <span>Akun</span>
           </button>
@@ -169,29 +182,25 @@
     <div id="view-auth" class="w-full max-w-md mx-auto py-6">
       <div class="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50">
         
-        <!-- Auth Header -->
         <div class="text-center mb-6">
           <div class="inline-flex w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 items-center justify-center text-[#1565c0] mb-3 shadow-sm">
             <i class="fa-solid fa-shield-halved text-2xl"></i>
           </div>
           <h2 id="auth-heading" class="text-2xl font-bold text-slate-900">Masuk ke Akun Anda</h2>
-          <p id="auth-subheading" class="text-xs text-slate-500 mt-1">Data Anda tersimpan terpisah dan aman di Google Sheets</p>
+          <p id="auth-subheading" class="text-xs text-slate-500 mt-1">Data Anda tersimpan terpisah dan aman di database</p>
         </div>
 
-        <!-- Auth Tabs (Login / Register) -->
         <div class="grid grid-cols-2 p-1 bg-slate-100 rounded-2xl mb-6 border border-slate-200">
           <button id="tab-btn-login" onclick="toggleAuthMode('login')" class="py-2 text-xs sm:text-sm font-semibold rounded-xl bg-[#1565c0] text-white shadow-sm transition">Masuk</button>
           <button id="tab-btn-register" onclick="toggleAuthMode('register')" class="py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Daftar Baru</button>
         </div>
 
-        <!-- Auth Form -->
         <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
-          
           <div id="field-nama-wrapper" class="hidden">
             <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-regular fa-user"></i></span>
-              <input type="text" id="auth-nama" placeholder="Contoh: Budi Pratama" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
+              <input type="text" id="auth-nama" placeholder="Contoh: Budi Pratama" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
             </div>
           </div>
 
@@ -199,7 +208,7 @@
             <label class="block text-xs font-semibold text-slate-700 mb-1.5">Alamat Email</label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-regular fa-envelope"></i></span>
-              <input type="email" id="auth-email" required placeholder="nama@email.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
+              <input type="email" id="auth-email" required placeholder="nama@email.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
             </div>
           </div>
 
@@ -207,7 +216,7 @@
             <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kata Sandi</label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-lock"></i></span>
-              <input type="password" id="auth-password" required placeholder="Minimal 6 karakter" class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
+              <input type="password" id="auth-password" required placeholder="Minimal 6 karakter" class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
               <button type="button" onclick="togglePasswordVisibility('auth-password', this)" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
                 <i class="fa-regular fa-eye"></i>
               </button>
@@ -220,14 +229,12 @@
           </button>
         </form>
 
-        <!-- Status Koneksi Database Terhubung Otomatis -->
         <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-center text-xs text-slate-500">
           <span class="flex items-center gap-2 font-medium">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>Terhubung ke Database DAKA</span>
           </span>
         </div>
-
       </div>
     </div>
 
@@ -241,7 +248,7 @@
           <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-2 flex items-center gap-2">
             Halo, <span id="user-display-name" class="text-[#1565c0]">Pengguna</span>
           </h2>
-          <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Kelola piutang yang harus ditagih dan hutang yang wajib dibayar.</p>
+          <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Daftar buku hutang & piutang per kontak (klik kontak untuk lihat detail & cicil).</p>
         </div>
 
         <div class="flex items-center gap-2.5">
@@ -268,7 +275,7 @@
           </div>
           <div id="stat-total-piutang" class="text-2xl font-black text-slate-900">Rp 0</div>
           <div class="text-xs text-slate-500 mt-1 flex items-center gap-1 font-medium">
-            <span id="stat-count-piutang" class="font-bold text-[#1565c0]">0</span> tagihan belum lunas
+            <span id="stat-count-piutang" class="font-bold text-[#1565c0]">0</span> orang berhutang
           </div>
         </div>
 
@@ -283,7 +290,7 @@
           </div>
           <div id="stat-total-hutang" class="text-2xl font-black text-slate-900">Rp 0</div>
           <div class="text-xs text-slate-500 mt-1 flex items-center gap-1 font-medium">
-            <span id="stat-count-hutang" class="font-bold text-rose-600">0</span> tanggungan belum lunas
+            <span id="stat-count-hutang" class="font-bold text-rose-600">0</span> tanggungan aktif
           </div>
         </div>
 
@@ -301,18 +308,15 @@
         </div>
       </div>
 
-      <!-- Filter, Search and Listing Container -->
+      <!-- Controls & Contact Summary Listing -->
       <div class="bg-white border border-slate-200 rounded-3xl p-4 sm:p-6 space-y-4 shadow-sm">
         
-        <!-- Controls: Search & Filter Tabs -->
         <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-          <!-- Search box -->
           <div class="relative flex-1 max-w-md">
             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="text" id="search-input" oninput="renderTransactionsList()" placeholder="Cari nama kontak atau catatan..." class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
+            <input type="text" id="search-input" oninput="renderContactsList()" placeholder="Cari nama orang / kontak..." class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15 transition">
           </div>
 
-          <!-- Type Filters -->
           <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
             <button onclick="setFilterType('all')" id="filter-all" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#1565c0] text-white shadow-sm">Semua</button>
             <button onclick="setFilterType('piutang')" id="filter-piutang" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:text-slate-900">Piutang</button>
@@ -321,8 +325,13 @@
           </div>
         </div>
 
-        <!-- Transactions List -->
-        <div id="tx-container" class="min-h-[220px]">
+        <div class="flex items-center justify-between text-xs text-slate-500 px-1 pt-1">
+          <span class="font-semibold text-slate-700"><i class="fa-solid fa-arrow-down-wide-short text-[#1565c0] mr-1.5"></i>Urutan: Hutang terbanyak di paling atas</span>
+          <span id="contact-count-label" class="font-medium text-slate-500">0 Kontak</span>
+        </div>
+
+        <!-- Contact Cards Container (Klik untuk lihat detail) -->
+        <div id="contacts-container" class="min-h-[220px]">
           <!-- Diisi via JavaScript -->
         </div>
 
@@ -330,9 +339,80 @@
 
     </div>
 
+    <!-- View Detail Kontak (Halaman Selanjutnya saat Kontak Diklik) -->
+    <div id="view-detail-kontak" class="hidden space-y-6">
+      
+      <!-- Top Navigation Detail -->
+      <div class="flex items-center justify-between gap-3">
+        <button onclick="backToHutangList()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-[#1565c0] hover:border-blue-200 font-semibold text-xs sm:text-sm shadow-sm transition">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Kembali ke Daftar</span>
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="openPayModalForContact()" class="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            <span>Bayar / Cicil</span>
+          </button>
+          <button onclick="openAddDebtForContact()" class="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-[#1565c0] hover:bg-[#0d47a1] text-white font-semibold text-xs sm:text-sm shadow-md shadow-[#1565c0]/20 transition">
+            <i class="fa-solid fa-plus"></i>
+            <span>Tambah Hutang</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Contact Overview Card -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm relative overflow-hidden">
+        <div class="absolute right-0 top-0 w-36 h-36 bg-[#1565c0]/5 rounded-full blur-2xl"></div>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative z-10">
+          
+          <div class="flex items-start sm:items-center gap-4">
+            <div id="detail-contact-avatar" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-[#1565c0] to-sky-500 text-white font-black text-xl sm:text-2xl flex items-center justify-center shadow-lg shadow-[#1565c0]/20 shrink-0">
+              Y
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap mb-1">
+                <h3 id="detail-contact-name" class="text-xl sm:text-2xl font-black text-slate-900">Nama Kontak</h3>
+                <span id="detail-contact-badge-tipe" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-blue-50 text-[#1565c0] border border-blue-200">
+                  Piutang
+                </span>
+                <span id="detail-contact-badge-status" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
+                  Belum Lunas
+                </span>
+              </div>
+              <p class="text-xs text-slate-500">Buku mutasi pinjaman & riwayat pembayaran cicilan</p>
+            </div>
+          </div>
+
+          <!-- Total Sisa Saldo -->
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left sm:text-right">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Total Sisa Tagihan</div>
+            <div id="detail-contact-sisa" class="text-2xl sm:text-3xl font-black text-[#1565c0]">Rp 0</div>
+            <div id="detail-contact-subinfo" class="text-xs text-slate-500 mt-0.5">Total Pinjam: Rp 0 | Terbayar: Rp 0</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Transactions & Payment Ledger for this Contact -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div>
+            <h4 class="font-bold text-slate-900 text-base">Riwayat Pinjaman & Cicilan</h4>
+            <p class="text-xs text-slate-500">Semua catatan transaksi yang terhubung dengan kontak ini</p>
+          </div>
+          <span id="detail-tx-count" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">0 Catatan</span>
+        </div>
+
+        <div id="detail-tx-container" class="space-y-3">
+          <!-- Diisi via JavaScript -->
+        </div>
+      </div>
+
+    </div>
+
     <!-- View Akun -->
     <div id="view-akun" class="hidden max-w-2xl mx-auto w-full space-y-6">
-      
       <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 pb-6 border-b border-slate-100 text-center sm:text-left">
           <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#1565c0] to-sky-500 p-[2.5px] shadow-lg shadow-[#1565c0]/20">
@@ -353,11 +433,8 @@
           </div>
         </div>
 
-        <!-- Account Settings & Information -->
         <div class="py-6 space-y-4">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Pengaturan Akun</h3>
-
-          <!-- Edit Profile Form -->
           <form onsubmit="handleProfileUpdate(event)" class="space-y-4">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1.5">Perbarui Nama Pengguna</label>
@@ -376,21 +453,18 @@
           </form>
         </div>
 
-        <!-- Logout Action -->
         <div class="pt-4 border-t border-slate-100">
           <button onclick="triggerLogout()" class="w-full py-3 px-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-sm transition flex items-center justify-center gap-2 border border-rose-100">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
             <span>Keluar dari Akun</span>
           </button>
         </div>
-
       </div>
-
     </div>
 
   </main>
 
-  <!-- Modal Tambah Transaksi -->
+  <!-- Modal Tambah Transaksi Kontak Baru -->
   <div id="modal-add-tx" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl relative">
       
@@ -405,8 +479,6 @@
       </div>
 
       <form onsubmit="handleCreateTransaction(event)" class="space-y-4">
-        
-        <!-- Pilihan Tipe: Piutang vs Hutang -->
         <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-2xl border border-slate-200">
           <label class="flex items-center justify-center gap-2 py-2.5 rounded-xl cursor-pointer text-xs font-semibold text-slate-600 has-[:checked]:bg-[#1565c0] has-[:checked]:text-white transition shadow-sm">
             <input type="radio" name="tx-tipe" value="piutang" checked class="hidden">
@@ -422,14 +494,14 @@
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Orang / Kontak</label>
-          <input type="text" id="tx-nama-kontak" required placeholder="Contoh: Andi Pratama" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15">
+          <input type="text" id="tx-nama-kontak" required placeholder="Contoh: Bg Yus / Pak Budi" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15">
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nominal (Rupiah)</label>
           <div class="relative">
             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-slate-500">Rp</span>
-            <input type="number" id="tx-nominal" min="1" required placeholder="100000" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15">
+            <input type="text" inputmode="numeric" id="tx-nominal" required placeholder="100.000" oninput="formatRupiahInput(this)" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15">
           </div>
         </div>
 
@@ -440,7 +512,7 @@
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1.5">Catatan / Keperluan (Opsional)</label>
-          <textarea id="tx-catatan" rows="2" placeholder="Contoh: Pinjaman modal usaha / beli tiket" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15"></textarea>
+          <textarea id="tx-catatan" rows="2" placeholder="Contoh: Pinjaman modal / beli keperluan" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15"></textarea>
         </div>
 
         <div class="flex gap-3 pt-2">
@@ -450,13 +522,105 @@
             <i id="tx-spinner" class="fa-solid fa-circle-notch fa-spin hidden"></i>
           </button>
         </div>
+      </form>
+    </div>
+  </div>
 
+  <!-- Modal Tambah Pinjaman Baru untuk Kontak Tertentu -->
+  <div id="modal-add-debt" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Tambah Pinjaman Baru</h3>
+          <p class="text-xs text-slate-500">Untuk kontak: <strong id="modal-debt-contact-name" class="text-[#1565c0]">Nama</strong></p>
+        </div>
+        <button onclick="closeAddDebtModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleAdditionalDebtSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nominal Tambahan (Rupiah)</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-slate-500">Rp</span>
+            <input type="text" inputmode="numeric" id="modal-debt-nominal" required placeholder="50.000" oninput="formatRupiahInput(this)" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tanggal Jatuh Tempo</label>
+          <input type="date" id="modal-debt-tempo" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Catatan Tambahan</label>
+          <textarea id="modal-debt-catatan" rows="2" placeholder="Contoh: Tambahan pinjaman kedua" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/15"></textarea>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeAddDebtModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm">Batal</button>
+          <button type="submit" id="btn-submit-debt" class="flex-1 py-2.5 rounded-xl bg-[#1565c0] hover:bg-[#0d47a1] text-white font-semibold text-sm shadow-md shadow-[#1565c0]/20 flex items-center justify-center gap-2">
+            <span>Tambah</span>
+            <i id="debt-spinner" class="fa-solid fa-circle-notch fa-spin hidden"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Bayar / Cicil Hutang -->
+  <div id="modal-pay" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Catat Pembayaran / Cicilan</h3>
+          <p class="text-xs text-slate-500">Untuk kontak: <strong id="modal-pay-contact-name" class="text-emerald-700">Nama</strong></p>
+        </div>
+        <button onclick="closePayModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-100 mb-4 flex items-center justify-between">
+        <span class="text-xs font-semibold text-emerald-800">Sisa Tagihan Saat Ini:</span>
+        <span id="modal-pay-current-debt" class="text-base font-black text-emerald-700">Rp 0</span>
+      </div>
+
+      <form onsubmit="handlePaySubmit(event)" class="space-y-4">
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-semibold text-slate-700">Nominal Bayar / Cicil</label>
+            <button type="button" onclick="fillPayFullDebt()" class="text-[11px] font-bold text-[#1565c0] hover:underline">Bayar Lunas Semua</button>
+          </div>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-slate-500">Rp</span>
+            <input type="text" inputmode="numeric" id="modal-pay-nominal" required placeholder="50.000" oninput="formatRupiahInput(this)" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tanggal Pembayaran</label>
+          <input type="date" id="modal-pay-date" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Catatan (Opsional)</label>
+          <input type="text" id="modal-pay-catatan" placeholder="Contoh: Cicilan ke-1 transfer BCA" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15">
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closePayModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm">Batal</button>
+          <button type="submit" id="btn-submit-pay" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2">
+            <span>Simpan Pembayaran</span>
+            <i id="pay-spinner" class="fa-solid fa-circle-notch fa-spin hidden"></i>
+          </button>
+        </div>
       </form>
     </div>
   </div>
 
   <script>
-    // URL Backend Google Apps Script Database DAKA ECOSYSTEM
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwH9h0XFMbDBSi6VkPDgdl0QAmuPDkwtbXDOS2rZMhIFLtFn6s4rfwfhgVTtV1UIHQy/exec";
     const SESSION_KEY = "daka_active_user";
     const DEMO_TX_KEY = "daka_demo_transactions";
@@ -465,21 +629,82 @@
       scriptUrl: SCRIPT_URL,
       currentUser: JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null"),
       transactions: [],
-      filterType: "all",      // 'all', 'piutang', 'hutang'
-      filterStatus: "all",    // 'all', 'belum_lunas'
-      activeTab: "hutang"     // 'hutang', 'akun'
+      filterType: "all",
+      filterStatus: "all",
+      activeTab: "hutang",
+      activeContactKey: null
     };
 
+    function showGlobalLoader(title = "Sedang Memproses...", desc = "Menyinkronkan data dengan database DAKA...", icon = "fa-arrows-rotate") {
+      const loader = document.getElementById("global-loader");
+      if (!loader) return;
+      document.getElementById("global-loader-title").innerText = title;
+      document.getElementById("global-loader-desc").innerText = desc;
+      const iconEl = document.getElementById("global-loader-icon");
+      if (iconEl) {
+        iconEl.className = "fa-solid " + icon + " text-lg text-[#1565c0] animate-pulse";
+      }
+      loader.classList.remove("hidden");
+    }
+
+    function hideGlobalLoader() {
+      const loader = document.getElementById("global-loader");
+      if (loader) loader.classList.add("hidden");
+    }
+
+    function formatRupiah(num) {
+      const n = Number(num) || 0;
+      return "Rp " + n.toLocaleString("id-ID");
+    }
+
+    function parseRupiahInput(value) {
+      if (!value) return 0;
+      const clean = value.toString().replace(/\D/g, "");
+      return Number(clean) || 0;
+    }
+
+    function formatRupiahInput(input) {
+      const cursorPosition = input.selectionStart;
+      const originalLength = input.value.length;
+      const raw = input.value.replace(/\D/g, "");
+      
+      if (!raw) {
+        input.value = "";
+        return;
+      }
+      
+      const formatted = Number(raw).toLocaleString("id-ID");
+      input.value = formatted;
+      
+      const newLength = formatted.length;
+      const newPos = cursorPosition + (newLength - originalLength);
+      if (cursorPosition !== null && newPos >= 0 && newPos <= newLength) {
+        input.setSelectionRange(newPos, newPos);
+      }
+    }
+
+    function escapeHTML(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
-      // Intro logo DAKA ECOSYSTEM tepat 0.1 detik (100 milidetik) sesuai spesifikasi
+      // Splash intro selama tepat 0.1 detik (100 ms)
       setTimeout(() => {
         const splash = document.getElementById("splash-intro");
         if (splash) {
           splash.classList.add("hide-splash");
+          setTimeout(() => {
+            splash.style.display = "none";
+          }, 300);
         }
       }, 100);
 
-      // Inisialisasi tampilan berdasarkan autentikasi
       initApp();
     });
 
@@ -494,6 +719,7 @@
     function showAuthView() {
       document.getElementById("view-auth").classList.remove("hidden");
       document.getElementById("view-hutang").classList.add("hidden");
+      document.getElementById("view-detail-kontak").classList.add("hidden");
       document.getElementById("view-akun").classList.add("hidden");
     }
 
@@ -501,18 +727,17 @@
       document.getElementById("view-auth").classList.add("hidden");
       document.getElementById("user-display-name").innerText = state.currentUser.nama || "Pengguna";
       
-      // Update profil akun
       document.getElementById("profile-nama").innerText = state.currentUser.nama || "-";
       document.getElementById("profile-email").innerText = state.currentUser.email || "-";
       document.getElementById("profile-userid").innerText = state.currentUser.user_id || "-";
       document.getElementById("edit-profile-nama").value = state.currentUser.nama || "";
       document.getElementById("profile-avatar").innerText = (state.currentUser.nama || "U").charAt(0).toUpperCase();
 
-      switchTab(state.activeTab);
+      navigateTo(state.activeTab || "hutang");
       fetchTransactions();
     }
 
-    function switchTab(tabName) {
+    function navigateTo(tabName) {
       if (!state.currentUser) {
         showToast("Silakan masuk terlebih dahulu", "info");
         return;
@@ -522,16 +747,19 @@
       const btnHutang = document.getElementById("nav-btn-hutang");
       const btnAkun = document.getElementById("nav-btn-akun");
       const viewHutang = document.getElementById("view-hutang");
+      const viewDetail = document.getElementById("view-detail-kontak");
       const viewAkun = document.getElementById("view-akun");
 
       if (tabName === "hutang") {
         viewHutang.classList.remove("hidden");
+        viewDetail.classList.add("hidden");
         viewAkun.classList.add("hidden");
 
         btnHutang.className = "flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-[#1565c0] text-[#1565c0] bg-blue-50 shadow-sm";
         btnAkun.className = "flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-transparent text-slate-600 hover:text-[#1565c0] hover:bg-slate-100";
       } else {
         viewHutang.classList.add("hidden");
+        viewDetail.classList.add("hidden");
         viewAkun.classList.remove("hidden");
 
         btnAkun.className = "flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-[#1565c0] text-[#1565c0] bg-blue-50 shadow-sm";
@@ -551,7 +779,7 @@
 
       if (mode === "login") {
         heading.innerText = "Masuk ke Akun Anda";
-        subheading.innerText = "Data tersinkronisasi aman dengan database Google Sheets Anda";
+        subheading.innerText = "Data Anda tersimpan terpisah dan aman di database";
         submitText.innerText = "Masuk Sekarang";
         fieldNama.classList.add("hidden");
         document.getElementById("auth-nama").required = false;
@@ -584,7 +812,6 @@
 
       try {
         if (!state.scriptUrl) {
-          // Fallback ke Simulasi Offline jika pengguna belum menyetel Apps Script URL
           simulateAuth(email, password, nama);
           return;
         }
@@ -613,14 +840,13 @@
           showToast(result.message || "Gagal memproses", "error");
         }
       } catch (err) {
-        showToast("Terjadi kendala jaringan. Periksa kembali URL Google Apps Script Anda.", "error");
+        showToast("Terjadi kendala jaringan saat menghubungi database.", "error");
       } finally {
         spinner.classList.add("hidden");
         submitBtn.disabled = false;
       }
     }
 
-    // Simulasi offline cepat jika belum konfigurasi Google Sheet
     function simulateAuth(email, password, nama) {
       setTimeout(() => {
         const mockUser = {
@@ -631,9 +857,9 @@
         };
         state.currentUser = mockUser;
         sessionStorage.setItem(SESSION_KEY, JSON.stringify(mockUser));
-        showToast("Mode Demo Aktif: Masuk sebagai " + mockUser.nama, "info");
+        showToast("Masuk sebagai " + mockUser.nama, "info");
         showMainApp();
-      }, 400);
+      }, 300);
     }
 
     async function fetchTransactions() {
@@ -644,11 +870,11 @@
 
       try {
         if (!state.scriptUrl) {
-          // Ambil dari penyimpanan demo browser
           const localData = JSON.parse(localStorage.getItem(DEMO_TX_KEY + "_" + state.currentUser.user_id) || "[]");
           state.transactions = localData;
           calculateStats();
-          renderTransactionsList();
+          renderContactsList();
+          if (state.activeContactKey) renderActiveContactDetail();
           return;
         }
 
@@ -665,33 +891,91 @@
         if (result.success) {
           state.transactions = result.data || [];
           calculateStats();
-          renderTransactionsList();
+          renderContactsList();
+          if (state.activeContactKey) renderActiveContactDetail();
         } else {
           showToast(result.message || "Gagal mengambil data", "error");
         }
       } catch (e) {
-        showToast("Gagal menyambung ke server Google Sheet", "error");
+        showToast("Gagal menyambung ke database DAKA", "error");
       } finally {
         if (refreshIcon) refreshIcon.classList.remove("fa-spin");
       }
     }
 
+    // Mengelompokkan transaksi per kontak & mengurutkan hutang terbesar di paling atas
+    function getGroupedContacts() {
+      const groups = {};
+
+      state.transactions.forEach(t => {
+        const rawName = (t.nama_kontak || "").trim();
+        if (!rawName) return;
+        const key = rawName.toLowerCase();
+
+        if (!groups[key]) {
+          const isPay = t.tipe && t.tipe.startsWith("bayar");
+          let baseType = t.tipe;
+          if (isPay) {
+            baseType = t.tipe === "bayar_hutang" ? "hutang" : "piutang";
+          }
+
+          groups[key] = {
+            key: key,
+            nama: rawName,
+            tipe: baseType || "piutang",
+            totalPinjam: 0,
+            totalBayar: 0,
+            sisa: 0,
+            isLunas: false,
+            items: []
+          };
+        }
+
+        groups[key].items.push(t);
+        const nom = Number(t.nominal) || 0;
+        const isPay = t.tipe === "bayar" || t.tipe === "bayar_cicilan" || t.tipe === "bayar_piutang" || t.tipe === "bayar_hutang";
+
+        if (isPay) {
+          groups[key].totalBayar += nom;
+        } else {
+          if (t.status === "lunas") {
+            groups[key].totalPinjam += nom;
+            groups[key].totalBayar += nom;
+          } else {
+            groups[key].totalPinjam += nom;
+          }
+        }
+      });
+
+      const list = Object.values(groups).map(g => {
+        let sisa = g.totalPinjam - g.totalBayar;
+        if (sisa < 0) sisa = 0;
+        g.sisa = sisa;
+        g.isLunas = sisa <= 0 && g.totalPinjam > 0;
+        return g;
+      });
+
+      // Hutang atau Piutang dengan sisa terbesar otomatis ditaruh di paling atas
+      list.sort((a, b) => b.sisa - a.sisa || b.totalPinjam - a.totalPinjam);
+      return list;
+    }
+
     function calculateStats() {
+      const contacts = getGroupedContacts();
       let totalPiutang = 0;
       let countPiutang = 0;
       let totalHutang = 0;
       let countHutang = 0;
 
-      state.transactions.forEach(t => {
-        const nominal = Number(t.nominal) || 0;
-        if (t.tipe === "piutang") {
-          if (t.status === "belum_lunas") {
-            totalPiutang += nominal;
+      contacts.forEach(c => {
+        if (c.tipe === "piutang") {
+          if (c.sisa > 0) {
+            totalPiutang += c.sisa;
             countPiutang++;
           }
-        } else if (t.tipe === "hutang") {
-          if (t.status === "belum_lunas") {
-            totalHutang += nominal;
+        } else if (c.tipe === "hutang") {
+          if (c.sisa > 0) {
+            totalHutang += c.sisa;
             countHutang++;
           }
         }
@@ -709,18 +993,19 @@
       nettoEl.className = "text-2xl font-black " + (netto >= 0 ? "text-[#1565c0]" : "text-rose-600");
     }
 
-    function renderTransactionsList() {
-      const container = document.getElementById("tx-container");
-      const searchKeyword = (document.getElementById("search-input").value || "").toLowerCase();
+    function renderContactsList() {
+      const container = document.getElementById("contacts-container");
+      const searchKeyword = (document.getElementById("search-input").value || "").toLowerCase().trim();
+      const allContacts = getGroupedContacts();
 
-      // Filter data
-      let filtered = state.transactions.filter(t => {
-        if (state.filterType !== "all" && t.tipe !== state.filterType) return false;
-        if (state.filterStatus === "belum_lunas" && t.status !== "belum_lunas") return false;
-        const nameMatch = (t.nama_kontak || "").toLowerCase().includes(searchKeyword);
-        const notesMatch = (t.catatan || "").toLowerCase().includes(searchKeyword);
-        return nameMatch || notesMatch;
+      let filtered = allContacts.filter(c => {
+        if (state.filterType !== "all" && c.tipe !== state.filterType) return false;
+        if (state.filterStatus === "belum_lunas" && c.isLunas) return false;
+        if (searchKeyword && !c.nama.toLowerCase().includes(searchKeyword)) return false;
+        return true;
       });
+
+      document.getElementById("contact-count-label").innerText = filtered.length + " Kontak";
 
       if (filtered.length === 0) {
         container.innerHTML = `
@@ -728,29 +1013,30 @@
             <div class="w-14 h-14 rounded-2xl bg-white text-[#1565c0] flex items-center justify-center mx-auto mb-3 shadow-sm border border-slate-200">
               <i class="fa-solid fa-folder-open text-2xl"></i>
             </div>
-            <h4 class="text-sm font-bold text-slate-800">Tidak ada catatan hutang/piutang</h4>
+            <h4 class="text-sm font-bold text-slate-800">Tidak ada kontak hutang/piutang</h4>
             <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Klik tombol "Catat Baru" di atas untuk menambahkan catatan transaksi pertama Anda.</p>
           </div>
         `;
         return;
       }
 
-      // Render cards dengan latar putih dan border halus
       let html = '<div class="space-y-3">';
-      filtered.forEach(t => {
-        const isPiutang = t.tipe === "piutang";
-        const isLunas = t.status === "lunas";
+      filtered.forEach((c) => {
+        const isPiutang = c.tipe === "piutang";
+        const isLunas = c.isLunas;
+        const initial = c.nama.charAt(0).toUpperCase();
 
         html += `
-          <div class="p-4 sm:p-5 rounded-2xl bg-white border ${isLunas ? 'border-slate-200/80 opacity-70 bg-slate-50/40' : 'border-slate-200'} hover:border-[#1565c0]/50 hover:shadow-md transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div onclick="openContactDetail('${c.key}')" class="p-4 sm:p-5 rounded-2xl bg-white border ${isLunas ? 'border-slate-200/80 bg-slate-50/50 opacity-80' : 'border-slate-200'} hover:border-[#1565c0] hover:shadow-md transition cursor-pointer flex items-center justify-between gap-4 group">
             
-            <div class="flex items-start gap-3.5 flex-1">
-              <div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 mt-0.5 shadow-sm border ${isPiutang ? 'bg-blue-50 text-[#1565c0] border-blue-100' : 'bg-rose-50 text-rose-600 border-rose-100'}">
-                <i class="fa-solid ${isPiutang ? 'fa-arrow-down-left' : 'fa-arrow-up-right'} text-base"></i>
+            <div class="flex items-center gap-3.5 flex-1 min-w-0">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 font-black text-base shadow-sm border ${isPiutang ? 'bg-blue-50 text-[#1565c0] border-blue-100 group-hover:bg-[#1565c0] group-hover:text-white' : 'bg-rose-50 text-rose-600 border-rose-100 group-hover:bg-rose-600 group-hover:text-white'} transition">
+                ${initial}
               </div>
-              <div>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="font-bold text-slate-900 text-sm sm:text-base">${escapeHTML(t.nama_kontak)}</span>
+
+              <div class="truncate">
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                  <span class="font-bold text-slate-900 text-sm sm:text-base group-hover:text-[#1565c0] transition">${escapeHTML(c.nama)}</span>
                   <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${isPiutang ? 'bg-blue-50 text-[#1565c0] border border-blue-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}">
                     ${isPiutang ? 'Piutang' : 'Hutang'}
                   </span>
@@ -758,28 +1044,23 @@
                     ${isLunas ? 'Lunas' : 'Belum Lunas'}
                   </span>
                 </div>
-                <div class="text-xs text-slate-500 mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
-                  <span><i class="fa-regular fa-calendar text-slate-400 mr-1.5"></i>Jatuh Tempo: <strong>${t.jatuh_tempo || '-'}</strong></span>
-                  ${t.catatan && t.catatan !== '-' ? `<span><i class="fa-regular fa-comment text-slate-400 mr-1.5"></i>${escapeHTML(t.catatan)}</span>` : ''}
+                <div class="text-xs text-slate-500 flex items-center gap-2">
+                  <span><i class="fa-regular fa-clipboard text-slate-400 mr-1"></i>${c.items.length} Riwayat Transaksi</span>
+                  <span>&bull;</span>
+                  <span class="text-slate-400">Klik untuk kelola & cicil</span>
                 </div>
               </div>
             </div>
 
-            <!-- Amount & Actions -->
-            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-              <div class="text-left sm:text-right">
-                <div class="text-base sm:text-lg font-black ${isPiutang ? 'text-[#1565c0]' : 'text-rose-600'}">
-                  ${formatRupiah(t.nominal)}
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="text-right">
+                <div class="text-xs font-semibold text-slate-400">Total Sisa</div>
+                <div class="text-base sm:text-lg font-black ${isLunas ? 'text-emerald-600' : (isPiutang ? 'text-[#1565c0]' : 'text-rose-600')}">
+                  ${formatRupiah(c.sisa)}
                 </div>
               </div>
-
-              <div class="flex items-center gap-1.5">
-                <button onclick="toggleTransactionStatus('${t.tx_id}', '${t.status}')" class="p-2 sm:p-2.5 rounded-xl border ${isLunas ? 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100' : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'} text-xs font-semibold transition" title="${isLunas ? 'Tandai Belum Lunas' : 'Tandai Sudah Lunas'}">
-                  <i class="fa-solid ${isLunas ? 'fa-rotate-left' : 'fa-check'}"></i>
-                </button>
-                <button onclick="confirmDeleteTransaction('${t.tx_id}')" class="p-2 sm:p-2.5 rounded-xl bg-slate-100 border border-slate-200 text-rose-600 hover:bg-rose-50 hover:border-rose-200 text-xs font-semibold transition" title="Hapus Data">
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
+              <div class="w-8 h-8 rounded-xl bg-slate-100 group-hover:bg-[#1565c0] group-hover:text-white text-slate-400 flex items-center justify-center text-xs transition">
+                <i class="fa-solid fa-chevron-right"></i>
               </div>
             </div>
 
@@ -790,24 +1071,346 @@
       container.innerHTML = html;
     }
 
+    function openContactDetail(contactKey) {
+      state.activeContactKey = contactKey;
+      document.getElementById("view-hutang").classList.add("hidden");
+      document.getElementById("view-detail-kontak").classList.remove("hidden");
+      renderActiveContactDetail();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function backToHutangList() {
+      state.activeContactKey = null;
+      document.getElementById("view-detail-kontak").classList.add("hidden");
+      document.getElementById("view-hutang").classList.remove("hidden");
+      renderContactsList();
+    }
+
+    function renderActiveContactDetail() {
+      if (!state.activeContactKey) return;
+      const allContacts = getGroupedContacts();
+      const contact = allContacts.find(c => c.key === state.activeContactKey);
+
+      if (!contact) {
+        backToHutangList();
+        return;
+      }
+
+      const isPiutang = contact.tipe === "piutang";
+      const isLunas = contact.isLunas;
+
+      document.getElementById("detail-contact-name").innerText = contact.nama;
+      document.getElementById("detail-contact-avatar").innerText = contact.nama.charAt(0).toUpperCase();
+
+      const badgeTipe = document.getElementById("detail-contact-badge-tipe");
+      badgeTipe.innerText = isPiutang ? "Piutang (Dia Pinjam)" : "Hutang (Saya Pinjam)";
+      badgeTipe.className = `text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${isPiutang ? 'bg-blue-50 text-[#1565c0] border border-blue-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`;
+
+      const badgeStatus = document.getElementById("detail-contact-badge-status");
+      badgeStatus.innerText = isLunas ? "Lunas" : "Belum Lunas";
+      badgeStatus.className = `text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${isLunas ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'}`;
+
+      const sisaEl = document.getElementById("detail-contact-sisa");
+      sisaEl.innerText = formatRupiah(contact.sisa);
+      sisaEl.className = `text-2xl sm:text-3xl font-black ${isLunas ? 'text-emerald-600' : (isPiutang ? 'text-[#1565c0]' : 'text-rose-600')}`;
+
+      document.getElementById("detail-contact-subinfo").innerText = `Total Pinjam: ${formatRupiah(contact.totalPinjam)} | Terbayar: ${formatRupiah(contact.totalBayar)}`;
+      document.getElementById("detail-tx-count").innerText = `${contact.items.length} Catatan`;
+
+      const container = document.getElementById("detail-tx-container");
+      if (contact.items.length === 0) {
+        container.innerHTML = `<p class="text-sm text-slate-500 py-6 text-center">Belum ada catatan transaksi untuk kontak ini.</p>`;
+        return;
+      }
+
+      let html = "";
+      contact.items.forEach(t => {
+        const isPayment = t.tipe === "bayar" || t.tipe === "bayar_cicilan" || t.tipe === "bayar_piutang" || t.tipe === "bayar_hutang";
+        const dateStr = t.jatuh_tempo || (t.created_at ? t.created_at.split("T")[0] : "-");
+
+        html += `
+          <div class="p-4 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 border ${isPayment ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : (isPiutang ? 'bg-blue-50 text-[#1565c0] border-blue-100' : 'bg-rose-50 text-rose-600 border-rose-100')}">
+                <i class="fa-solid ${isPayment ? 'fa-hand-holding-dollar' : 'fa-receipt'} text-sm"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-bold text-sm text-slate-900">${isPayment ? 'Pembayaran / Cicilan' : 'Pinjaman'}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${isPayment ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-700'}">
+                    ${isPayment ? 'Bayar / Cicil' : (t.status === 'lunas' ? 'Lunas' : 'Belum Lunas')}
+                  </span>
+                </div>
+                <div class="text-xs text-slate-500 mt-1 flex items-center gap-3 flex-wrap">
+                  <span><i class="fa-regular fa-calendar text-slate-400 mr-1"></i>${dateStr}</span>
+                  ${t.catatan && t.catatan !== '-' ? `<span><i class="fa-regular fa-comment text-slate-400 mr-1"></i>${escapeHTML(t.catatan)}</span>` : ''}
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+              <span class="text-base font-black ${isPayment ? 'text-emerald-600' : (isPiutang ? 'text-[#1565c0]' : 'text-rose-600')}">
+                ${isPayment ? '-' : '+'} ${formatRupiah(t.nominal)}
+              </span>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="confirmDeleteTransaction('${t.tx_id}')" class="p-2 rounded-xl bg-slate-100 border border-slate-200 text-rose-600 hover:bg-rose-50 hover:border-rose-200 text-xs font-semibold transition" title="Hapus Catatan Ini">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function openPayModalForContact() {
+      if (!state.activeContactKey) return;
+      const allContacts = getGroupedContacts();
+      const contact = allContacts.find(c => c.key === state.activeContactKey);
+      if (!contact) return;
+
+      document.getElementById("modal-pay-contact-name").innerText = contact.nama;
+      document.getElementById("modal-pay-current-debt").innerText = formatRupiah(contact.sisa);
+      document.getElementById("modal-pay-nominal").value = "";
+      document.getElementById("modal-pay-catatan").value = "";
+      document.getElementById("modal-pay-date").value = new Date().toISOString().split("T")[0];
+      document.getElementById("modal-pay").classList.remove("hidden");
+    }
+
+    function closePayModal() {
+      document.getElementById("modal-pay").classList.add("hidden");
+    }
+
+    function fillPayFullDebt() {
+      if (!state.activeContactKey) return;
+      const allContacts = getGroupedContacts();
+      const contact = allContacts.find(c => c.key === state.activeContactKey);
+      if (!contact) return;
+
+      const input = document.getElementById("modal-pay-nominal");
+      input.value = Number(contact.sisa || 0).toLocaleString("id-ID");
+    }
+
+    async function handlePaySubmit(event) {
+      event.preventDefault();
+      if (!state.currentUser || !state.activeContactKey) return;
+
+      const allContacts = getGroupedContacts();
+      const contact = allContacts.find(c => c.key === state.activeContactKey);
+      if (!contact) return;
+
+      const nominal = parseRupiahInput(document.getElementById("modal-pay-nominal").value);
+      const payDate = document.getElementById("modal-pay-date").value;
+      const catatanInput = document.getElementById("modal-pay-catatan").value.trim();
+      const catatan = catatanInput ? `Cicilan: ${catatanInput}` : "Pembayaran / Cicilan";
+
+      if (nominal <= 0) {
+        showToast("Masukkan nominal pembayaran yang valid", "error");
+        return;
+      }
+
+      const spinner = document.getElementById("pay-spinner");
+      const submitBtn = document.getElementById("btn-submit-pay");
+      spinner.classList.remove("hidden");
+      submitBtn.disabled = true;
+
+      showGlobalLoader("Mencatat Pembayaran...", `Menyimpan cicilan untuk ${contact.nama}...`, "fa-hand-holding-dollar");
+      const payType = contact.tipe === "piutang" ? "bayar_piutang" : "bayar_hutang";
+
+      try {
+        if (!state.scriptUrl) {
+          const newTx = {
+            tx_id: "TX-" + Math.floor(100000 + Math.random() * 900000),
+            user_id: state.currentUser.user_id,
+            tipe: payType,
+            nama_kontak: contact.nama,
+            nominal: Number(nominal),
+            jatuh_tempo: payDate,
+            status: "lunas",
+            catatan: catatan,
+            created_at: new Date().toISOString()
+          };
+          const key = DEMO_TX_KEY + "_" + state.currentUser.user_id;
+          const currentData = JSON.parse(localStorage.getItem(key) || "[]");
+          currentData.unshift(newTx);
+          localStorage.setItem(key, JSON.stringify(currentData));
+
+          state.transactions = currentData;
+          calculateStats();
+          closePayModal();
+          renderActiveContactDetail();
+          showToast("Pembayaran berhasil dicatat", "success");
+          return;
+        }
+
+        const response = await fetch(state.scriptUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "add_transaction",
+            user_id: state.currentUser.user_id,
+            tipe: payType,
+            nama_kontak: contact.nama,
+            nominal: nominal,
+            jatuh_tempo: payDate,
+            catatan: catatan
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showToast("Pembayaran berhasil dicatat ke database", "success");
+          closePayModal();
+          await fetchTransactions();
+        } else {
+          showToast(result.message || "Gagal mencatat pembayaran", "error");
+        }
+      } catch (e) {
+        showToast("Kesalahan jaringan saat menyimpan pembayaran", "error");
+      } finally {
+        spinner.classList.add("hidden");
+        submitBtn.disabled = false;
+        hideGlobalLoader();
+      }
+    }
+
+    function openAddDebtForContact() {
+      if (!state.activeContactKey) return;
+      const allContacts = getGroupedContacts();
+      const contact = allContacts.find(c => c.key === state.activeContactKey);
+      if (!contact) return;
+
+      document.getElementById("modal-debt-contact-name").innerText = contact.nama;
+      document.getElementById("modal-debt-nominal").value = "";
+      document.getElementById("modal-debt-catatan").value = "";
+      document.getElementById("modal-debt-tempo").value = new Date().toISOString().split("T")[0];
+      document.getElementById("modal-add-debt").classList.remove("hidden");
+    }
+
+    function closeAddDebtModal() {
+      document.getElementById("modal-add-debt").classList.add("hidden");
+    }
+
+    async function handleAdditionalDebtSubmit(event) {
+      event.preventDefault();
+      if (!state.currentUser || !state.activeContactKey) return;
+
+      const allContacts = getGroupedContacts();
+      const contact = allContacts.find(c => c.key === state.activeContactKey);
+      if (!contact) return;
+
+      const nominal = parseRupiahInput(document.getElementById("modal-debt-nominal").value);
+      const tempo = document.getElementById("modal-debt-tempo").value || "-";
+      const catatan = document.getElementById("modal-debt-catatan").value.trim() || "Tambah pinjaman";
+
+      if (nominal <= 0) {
+        showToast("Masukkan nominal yang valid", "error");
+        return;
+      }
+
+      const spinner = document.getElementById("debt-spinner");
+      const submitBtn = document.getElementById("btn-submit-debt");
+      spinner.classList.remove("hidden");
+      submitBtn.disabled = true;
+
+      showGlobalLoader("Menambahkan Hutang...", `Menyimpan pinjaman baru untuk ${contact.nama}...`, "fa-plus-circle");
+
+      try {
+        if (!state.scriptUrl) {
+          const newTx = {
+            tx_id: "TX-" + Math.floor(100000 + Math.random() * 900000),
+            user_id: state.currentUser.user_id,
+            tipe: contact.tipe,
+            nama_kontak: contact.nama,
+            nominal: Number(nominal),
+            jatuh_tempo: tempo,
+            status: "belum_lunas",
+            catatan: catatan,
+            created_at: new Date().toISOString()
+          };
+          const key = DEMO_TX_KEY + "_" + state.currentUser.user_id;
+          const currentData = JSON.parse(localStorage.getItem(key) || "[]");
+          currentData.unshift(newTx);
+          localStorage.setItem(key, JSON.stringify(currentData));
+
+          state.transactions = currentData;
+          calculateStats();
+          closeAddDebtModal();
+          renderActiveContactDetail();
+          showToast("Pinjaman tambahan berhasil dicatat", "success");
+          return;
+        }
+
+        const response = await fetch(state.scriptUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "add_transaction",
+            user_id: state.currentUser.user_id,
+            tipe: contact.tipe,
+            nama_kontak: contact.nama,
+            nominal: nominal,
+            jatuh_tempo: tempo,
+            catatan: catatan
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showToast("Catatan baru berhasil ditambahkan", "success");
+          closeAddDebtModal();
+          await fetchTransactions();
+        } else {
+          showToast(result.message || "Gagal mencatat transaksi", "error");
+        }
+      } catch (e) {
+        showToast("Kesalahan jaringan saat menyimpan data", "error");
+      } finally {
+        spinner.classList.add("hidden");
+        submitBtn.disabled = false;
+        hideGlobalLoader();
+      }
+    }
+
+    function openAddTransactionModal() {
+      document.getElementById("tx-nama-kontak").value = "";
+      document.getElementById("tx-nominal").value = "";
+      document.getElementById("tx-catatan").value = "";
+      document.getElementById("tx-jatuh-tempo").value = new Date().toISOString().split("T")[0];
+      document.getElementById("modal-add-tx").classList.remove("hidden");
+    }
+
+    function closeAddTransactionModal() {
+      document.getElementById("modal-add-tx").classList.add("hidden");
+    }
+
     async function handleCreateTransaction(event) {
       event.preventDefault();
       if (!state.currentUser) return;
 
       const tipe = document.querySelector('input[name="tx-tipe"]:checked').value;
       const namaKontak = document.getElementById("tx-nama-kontak").value.trim();
-      const nominal = document.getElementById("tx-nominal").value;
+      const nominal = parseRupiahInput(document.getElementById("tx-nominal").value);
       const jatuhTempo = document.getElementById("tx-jatuh-tempo").value || "-";
       const catatan = document.getElementById("tx-catatan").value.trim() || "-";
+
+      if (nominal <= 0) {
+        showToast("Masukkan nominal yang valid", "error");
+        return;
+      }
 
       const spinner = document.getElementById("tx-spinner");
       const submitBtn = document.getElementById("btn-submit-tx");
       spinner.classList.remove("hidden");
       submitBtn.disabled = true;
 
+      showGlobalLoader("Menyimpan Catatan...", "Mencatat transaksi baru ke database DAKA...", "fa-floppy-disk");
+
       try {
         if (!state.scriptUrl) {
-          // Simpan lokal mode demo
           const newTx = {
             tx_id: "TX-" + Math.floor(100000 + Math.random() * 900000),
             user_id: state.currentUser.user_id,
@@ -826,9 +1429,9 @@
           
           state.transactions = currentData;
           calculateStats();
-          renderTransactionsList();
+          renderContactsList();
           closeAddTransactionModal();
-          showToast("Catatan tersimpan (Mode Demo)", "success");
+          showToast("Catatan tersimpan", "success");
           return;
         }
 
@@ -848,9 +1451,9 @@
 
         const result = await response.json();
         if (result.success) {
-          showToast("Transaksi berhasil dicatat ke Google Sheets", "success");
+          showToast("Transaksi berhasil dicatat ke database", "success");
           closeAddTransactionModal();
-          fetchTransactions();
+          await fetchTransactions();
         } else {
           showToast(result.message || "Gagal mencatat transaksi", "error");
         }
@@ -859,56 +1462,17 @@
       } finally {
         spinner.classList.add("hidden");
         submitBtn.disabled = false;
-      }
-    }
-
-    async function toggleTransactionStatus(txId, currentStatus) {
-      const nextStatus = currentStatus === "lunas" ? "belum_lunas" : "lunas";
-
-      if (!state.scriptUrl) {
-        const key = DEMO_TX_KEY + "_" + state.currentUser.user_id;
-        const currentData = JSON.parse(localStorage.getItem(key) || "[]");
-        const idx = currentData.findIndex(item => item.tx_id === txId);
-        if (idx !== -1) {
-          currentData[idx].status = nextStatus;
-          localStorage.setItem(key, JSON.stringify(currentData));
-          state.transactions = currentData;
-          calculateStats();
-          renderTransactionsList();
-          showToast("Status diubah menjadi: " + (nextStatus === "lunas" ? "Lunas" : "Belum Lunas"), "success");
-        }
-        return;
-      }
-
-      try {
-        const response = await fetch(state.scriptUrl, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "update_status",
-            user_id: state.currentUser.user_id,
-            tx_id: txId,
-            status: nextStatus
-          })
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          showToast(result.message, "success");
-          fetchTransactions();
-        } else {
-          showToast(result.message || "Gagal memperbarui status", "error");
-        }
-      } catch (err) {
-        showToast("Gagal memperbarui status", "error");
+        hideGlobalLoader();
       }
     }
 
     function confirmDeleteTransaction(txId) {
       showCustomConfirm(
-        "Hapus Catatan Transaksi?",
-        "Tindakan ini permanen. Baris data pada Google Sheets Anda akan terhapus.",
+        "Hapus Catatan Ini?",
+        "Tindakan ini permanen. Catatan hutang/cicilan ini akan dihapus dari database Anda.",
         async () => {
+          showGlobalLoader("Menghapus Catatan...", "Menghapus data transaksi dari database...", "fa-trash-can");
+
           if (!state.scriptUrl) {
             const key = DEMO_TX_KEY + "_" + state.currentUser.user_id;
             let currentData = JSON.parse(localStorage.getItem(key) || "[]");
@@ -916,8 +1480,10 @@
             localStorage.setItem(key, JSON.stringify(currentData));
             state.transactions = currentData;
             calculateStats();
-            renderTransactionsList();
-            showToast("Data transaksi dihapus", "info");
+            renderContactsList();
+            if (state.activeContactKey) renderActiveContactDetail();
+            hideGlobalLoader();
+            showToast("Catatan berhasil dihapus", "info");
             return;
           }
 
@@ -934,13 +1500,15 @@
 
             const result = await response.json();
             if (result.success) {
-              showToast("Data berhasil dihapus dari Google Sheets", "info");
-              fetchTransactions();
+              showToast("Catatan berhasil dihapus dari database", "info");
+              await fetchTransactions();
             } else {
               showToast(result.message || "Gagal menghapus data", "error");
             }
           } catch (e) {
             showToast("Kesalahan jaringan saat menghapus", "error");
+          } finally {
+            hideGlobalLoader();
           }
         }
       );
@@ -951,10 +1519,13 @@
       const nama = document.getElementById("edit-profile-nama").value.trim();
       const password = document.getElementById("edit-profile-password").value;
 
+      showGlobalLoader("Menyimpan Profil...", "Memperbarui data akun Anda...", "fa-user-pen");
+
       if (!state.scriptUrl) {
         state.currentUser.nama = nama;
         sessionStorage.setItem(SESSION_KEY, JSON.stringify(state.currentUser));
-        showToast("Profil berhasil diperbarui (Mode Demo)", "success");
+        hideGlobalLoader();
+        showToast("Profil berhasil diperbarui", "success");
         initApp();
         return;
       }
@@ -982,6 +1553,8 @@
         }
       } catch (e) {
         showToast("Kesalahan saat menyimpan profil", "error");
+      } finally {
+        hideGlobalLoader();
       }
     }
 
@@ -993,6 +1566,7 @@
           sessionStorage.removeItem(SESSION_KEY);
           state.currentUser = null;
           state.transactions = [];
+          state.activeContactKey = null;
           showToast("Berhasil keluar dari akun", "info");
           showAuthView();
         }
@@ -1009,7 +1583,7 @@
           el.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600 hover:text-slate-900";
         }
       });
-      renderTransactionsList();
+      renderContactsList();
     }
 
     function setFilterStatus(status) {
@@ -1020,19 +1594,7 @@
         state.filterStatus = status;
         document.getElementById("filter-status").className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-600 text-white shadow-sm";
       }
-      renderTransactionsList();
-    }
-
-    function openAddTransactionModal() {
-      document.getElementById("tx-nama-kontak").value = "";
-      document.getElementById("tx-nominal").value = "";
-      document.getElementById("tx-catatan").value = "";
-      document.getElementById("tx-jatuh-tempo").value = new Date().toISOString().split("T")[0];
-      document.getElementById("modal-add-tx").classList.remove("hidden");
-    }
-
-    function closeAddTransactionModal() {
-      document.getElementById("modal-add-tx").classList.add("hidden");
+      renderContactsList();
     }
 
     function showToast(message, type = "success") {
@@ -1091,17 +1653,6 @@
         field.type = "password";
         icon.className = "fa-regular fa-eye";
       }
-    }
-
-    function formatRupiah(num) {
-      return "Rp " + Number(num || 0).toLocaleString("id-ID");
-    }
-
-    function escapeHTML(str) {
-      if (!str) return "";
-      return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-      );
     }
   </script>
 </body>
