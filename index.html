@@ -335,7 +335,7 @@
         </div>
 
         <!-- KOLOM DETAIL (Kanan): Tampil di layar Laptop bersisian, atau satu layar penuh di HP saat kontak diklik -->
-        <div id="col-detail-pane" class="w-full md:col-span-7 lg:col-span-7 space-y-4 max-w-md mx-auto md:max-w-none hidden md:block">
+        <div id="col-detail-pane" class="w-full md:col-span-7 lg:col-span-7 space-y-3.5 max-w-md mx-auto md:max-w-none hidden md:block">
           
           <!-- Placeholder Bila di Layar Komputer Belum Ada Kontak yang Dipilih -->
           <div id="detail-empty-placeholder" class="bg-white border border-dashed border-slate-200 rounded-3xl p-12 text-center flex flex-col items-center justify-center min-h-[380px] hidden">
@@ -347,73 +347,87 @@
           </div>
 
           <!-- Konten Aktif Detail Kontak -->
-          <div id="detail-active-wrapper" class="space-y-4">
+          <div id="detail-active-wrapper" class="space-y-3.5">
             
-            <!-- Top Action Bar Detail -->
-            <div class="flex items-center justify-between gap-2 bg-white md:bg-transparent p-2.5 md:p-0 rounded-2xl border md:border-0 border-slate-200">
-              <!-- Tombol Kembali: Tampil di HP, Sembunyi Otomatis di Layar Laptop -->
-              <button onclick="backToHutangList()" id="btn-back-mobile" class="md:hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 text-slate-700 hover:text-[#1565c0] font-semibold text-xs transition">
-                <i class="fa-solid fa-arrow-left"></i>
+            <!-- Top Action Bar: Tombol Kembali (Mobile) & Judul Rincian (Laptop) -->
+            <div class="flex items-center justify-between gap-2">
+              <button onclick="backToHutangList()" id="btn-back-mobile" class="md:hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200/90 text-slate-700 hover:text-[#1565c0] font-bold text-xs shadow-xs transition active:scale-95">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
                 <span>Kembali</span>
               </button>
 
-              <div class="hidden md:flex items-center gap-2">
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Rincian Pelanggan</span>
-              </div>
-
-              <!-- Tombol Aksi Transaksi -->
-              <div class="flex items-center gap-2 ml-auto">
-                <button onclick="openPayModalForContact()" class="inline-flex items-center gap-1 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition">
-                  <i class="fa-solid fa-hand-holding-dollar"></i>
-                  <span>Bayar / Cicil</span>
-                </button>
-                <button onclick="openAddDebtForContact()" class="inline-flex items-center gap-1 px-3.5 py-2 rounded-xl bg-[#1565c0] hover:bg-[#0d47a1] text-white font-bold text-xs shadow-xs transition">
-                  <i class="fa-solid fa-plus"></i>
-                  <span>Tambah Utang</span>
-                </button>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Rincian Pelanggan</span>
               </div>
             </div>
 
             <!-- Overview Tagihan Kontak -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-              <div class="flex items-center gap-4 mb-4">
-                <div id="detail-contact-avatar" class="w-14 h-14 rounded-full bg-[#38bdf8] text-white font-bold text-xl flex items-center justify-center shadow-xs shrink-0">
+            <div class="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3.5">
+              
+              <!-- Identitas Kontak -->
+              <div class="flex items-center gap-3.5">
+                <div id="detail-contact-avatar" class="w-12 h-12 rounded-full bg-[#38bdf8] text-white font-bold text-lg flex items-center justify-center shadow-xs shrink-0">
                   U
                 </div>
                 <div class="min-w-0 flex-1">
-                  <h3 id="detail-contact-name" class="text-lg font-black text-slate-900 truncate uppercase">NAMA KONTAK</h3>
-                  <div class="flex items-center gap-2 mt-1">
-                    <span id="detail-contact-badge-tipe" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase bg-blue-50 text-[#1565c0]">
+                  <h3 id="detail-contact-name" class="text-base sm:text-lg font-black text-slate-900 truncate uppercase">NAMA KONTAK</h3>
+                  <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                    <span id="detail-contact-badge-tipe" class="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase bg-blue-50 text-[#1565c0]">
                       Utang Pelanggan
                     </span>
-                    <span id="detail-contact-badge-status" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase bg-amber-50 text-amber-800">
+                    <span id="detail-contact-badge-status" class="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase bg-amber-50 text-amber-800">
                       Belum Lunas
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                <div>
-                  <span class="text-[10px] uppercase font-bold text-slate-400 block">Sisa Tagihan Aktif</span>
-                  <div id="detail-contact-sisa" class="text-2xl font-black text-slate-900">Rp 0</div>
+              <!-- Kotak Sisa Tagihan (Rapi, Font Pas & Tidak Pecah Dua Baris) -->
+              <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
+                <div class="flex items-baseline justify-between gap-2">
+                  <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Sisa Tagihan Aktif</span>
+                  <span id="detail-contact-subinfo" class="text-[11px] font-semibold text-slate-500 truncate">Total: Rp 0</span>
                 </div>
-                <div class="text-right text-xs text-slate-500">
-                  <span id="detail-contact-subinfo" class="block font-medium">Total: Rp 0</span>
+                <div id="detail-contact-sisa" class="text-xl sm:text-2xl font-black tracking-tight leading-none text-rose-600">
+                  Rp 0
                 </div>
               </div>
+
+              <!-- 3 Tombol Aksi Lengkap: Lunasi Hutang, Bayar/Cicil, Tambah Utang -->
+              <div class="grid grid-cols-3 gap-2 pt-0.5">
+                
+                <!-- 1. Tombol Lunasi Hutang Langsung -->
+                <button onclick="quickPayFullDebt()" class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-2.5 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs shadow-xs transition text-center" title="Lunasi seluruh sisa hutang">
+                  <i class="fa-solid fa-circle-check text-xs"></i>
+                  <span class="truncate">Lunasi</span>
+                </button>
+
+                <!-- 2. Tombol Bayar / Cicil -->
+                <button onclick="openPayModalForContact()" class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-2.5 px-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-900 font-bold text-xs shadow-xs transition text-center" title="Catat cicilan / pembayaran sebagian">
+                  <i class="fa-solid fa-hand-holding-dollar text-xs"></i>
+                  <span class="truncate">Bayar / Cicil</span>
+                </button>
+
+                <!-- 3. Tombol Tambah Utang -->
+                <button onclick="openAddDebtForContact()" class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-2.5 px-2 rounded-xl bg-[#1565c0] hover:bg-[#0d47a1] active:scale-95 text-white font-bold text-xs shadow-xs transition text-center" title="Catat penambahan pinjaman baru">
+                  <i class="fa-solid fa-plus text-xs"></i>
+                  <span class="truncate">Tambah Utang</span>
+                </button>
+
+              </div>
+
             </div>
 
             <!-- Riwayat Mutasi Transaksi -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3.5">
-              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                 <div>
                   <span class="text-xs sm:text-sm font-bold text-slate-800">Riwayat Mutasi & Pembayaran</span>
-                  <p class="text-[11px] text-slate-400">Catatan kronologis penambahan dan pelunasan</p>
+                  <p class="text-[10px] text-slate-400">Catatan kronologis penambahan dan pelunasan</p>
                 </div>
-                <span id="detail-tx-count" class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600">0 Catatan</span>
+                <span id="detail-tx-count" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">0 Catatan</span>
               </div>
-              <div id="detail-tx-container" class="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
+              <div id="detail-tx-container" class="space-y-2 max-h-[460px] overflow-y-auto pr-0.5">
                 <!-- Diisi via JavaScript -->
               </div>
             </div>
@@ -533,7 +547,7 @@
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Orang / Kontak</label>
-          <input type="text" id="tx-nama-kontak" required placeholder="Contoh: UANG KURBAN / mba Desi" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]">
+          <input type="text" id="tx-nama-kontak" required placeholder="Contoh: BG YUS / mba Desi" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]">
         </div>
 
         <div>
@@ -545,13 +559,13 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Jatuh Tempo (Opsional)</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Transaksi / Tempo</label>
           <input type="date" id="tx-jatuh-tempo" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]">
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan / Keterangan</label>
-          <textarea id="tx-catatan" rows="2" placeholder="Contoh: Pinjaman modal atau cicilan barang" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]"></textarea>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan / Keterangan (Judul Transaksi)</label>
+          <textarea id="tx-catatan" rows="2" placeholder="Contoh: Belanja bahan, Servis LCD, Pinjam kas" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]"></textarea>
         </div>
 
         <div class="flex gap-2.5 pt-1">
@@ -601,8 +615,8 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Keterangan (Opsional)</label>
-          <input type="text" id="modal-pay-catatan" placeholder="Contoh: Cicilan via transfer BCA" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-emerald-600">
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan / Keterangan (Opsional)</label>
+          <input type="text" id="modal-pay-catatan" placeholder="Contoh: Cicilan transfer bank, titipan kasir" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-emerald-600">
         </div>
 
         <div class="flex gap-2.5 pt-1">
@@ -639,13 +653,13 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Jatuh Tempo</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Transaksi / Tempo</label>
           <input type="date" id="modal-debt-tempo" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]">
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Tambahan</label>
-          <textarea id="modal-debt-catatan" rows="2" placeholder="Contoh: Tambah pinjaman belanja" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]"></textarea>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan / Keterangan (Judul Transaksi)</label>
+          <textarea id="modal-debt-catatan" rows="2" placeholder="Contoh: Tambah ambil barang, servis lanjutan" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]"></textarea>
         </div>
 
         <div class="flex gap-2.5 pt-1">
@@ -739,7 +753,7 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Keterangan / Catatan</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan / Keterangan (Judul Transaksi)</label>
           <textarea id="edit-tx-catatan" rows="2" placeholder="Keterangan transaksi" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]"></textarea>
         </div>
 
@@ -1347,17 +1361,17 @@
 
       const badgeTipe = document.getElementById("detail-contact-badge-tipe");
       badgeTipe.innerText = isPiutang ? "Utang Pelanggan" : "Utang Saya";
-      badgeTipe.className = `text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase ${isPiutang ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'}`;
+      badgeTipe.className = `text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${isPiutang ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'}`;
 
       const badgeStatus = document.getElementById("detail-contact-badge-status");
       badgeStatus.innerText = isLunas ? "Lunas" : "Belum Lunas";
-      badgeStatus.className = `text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase ${isLunas ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}`;
+      badgeStatus.className = `text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${isLunas ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}`;
 
       const sisaEl = document.getElementById("detail-contact-sisa");
       sisaEl.innerText = formatRupiah(contact.sisa);
-      sisaEl.className = `text-2xl font-black ${isLunas ? 'text-emerald-600' : (isPiutang ? 'text-rose-600' : 'text-emerald-600')}`;
+      sisaEl.className = `text-xl sm:text-2xl font-black tracking-tight leading-none ${isLunas ? 'text-emerald-600' : (isPiutang ? 'text-rose-600' : 'text-emerald-600')}`;
 
-      document.getElementById("detail-contact-subinfo").innerText = `Total Pinjam: ${formatRupiah(contact.totalPinjam)} | Terbayar: ${formatRupiah(contact.totalBayar)}`;
+      document.getElementById("detail-contact-subinfo").innerText = `Total: ${formatRupiah(contact.totalPinjam)} | Bayar: ${formatRupiah(contact.totalBayar)}`;
       document.getElementById("detail-tx-count").innerText = `${contact.items.length} Catatan`;
 
       const container = document.getElementById("detail-tx-container");
@@ -1369,36 +1383,101 @@
       let html = "";
       contact.items.forEach(t => {
         const isPayment = t.tipe === "bayar" || t.tipe === "bayar_cicilan" || t.tipe === "bayar_piutang" || t.tipe === "bayar_hutang";
-        const dateStr = t.jatuh_tempo || (t.created_at ? t.created_at.split("T")[0] : "-");
+        const dateStr = t.jatuh_tempo && t.jatuh_tempo !== "-" ? t.jatuh_tempo : (t.created_at ? t.created_at.split("T")[0] : "-");
+
+        // Jadikan keterangan catatan sebagai JUDUL UTAMA
+        const rawNote = (t.catatan || "").trim();
+        const hasCustomNote = rawNote && rawNote !== "-";
+        const displayTitle = hasCustomNote ? rawNote : (isPayment ? "Pembayaran / Cicilan" : "Catatan Pinjaman");
+        const typeSubtitle = isPayment ? "Pembayaran / Cicilan" : (t.tipe === "hutang" ? "Utang Saya" : "Utang Pelanggan");
 
         html += `
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-3 hover:bg-slate-100/60 transition">
-            <div class="flex items-center gap-2.5 min-w-0">
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-2.5 hover:bg-slate-100/60 transition">
+            
+            <!-- Ikon & Info (Judul Catatan + Subtitle Jenis/Tanggal) -->
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
               <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isPayment ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-[#1565c0]'}">
                 <i class="fa-solid ${isPayment ? 'fa-hand-holding-dollar' : 'fa-receipt'} text-xs"></i>
               </div>
-              <div class="truncate">
-                <div class="font-bold text-xs text-slate-800 truncate">${isPayment ? 'Pembayaran / Cicilan' : 'Catatan Pinjaman'}</div>
-                <div class="text-[10px] text-slate-400">${dateStr} ${t.catatan && t.catatan !== '-' ? '&bull; ' + escapeHTML(t.catatan) : ''}</div>
+              <div class="min-w-0 flex-1">
+                <div class="font-bold text-xs text-slate-800 truncate" title="${escapeHTML(displayTitle)}">
+                  ${escapeHTML(displayTitle)}
+                </div>
+                <div class="text-[10px] text-slate-400 truncate mt-0.5">
+                  <span>${dateStr}</span> &bull; <span>${typeSubtitle}</span>
+                </div>
               </div>
             </div>
 
+            <!-- Nominal & Tombol Aksi (Edit & Hapus) -->
             <div class="flex items-center gap-1.5 shrink-0">
-              <span class="text-xs sm:text-sm font-black mr-1 ${isPayment ? 'text-emerald-600' : 'text-rose-600'}">
+              <span class="text-xs font-black mr-0.5 ${isPayment ? 'text-emerald-600' : 'text-rose-600'}">
                 ${isPayment ? '-' : '+'} ${formatRupiah(t.nominal)}
               </span>
-              <button onclick="openEditTxModal('${t.tx_id}')" class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-[#1565c0] hover:bg-blue-50 flex items-center justify-center transition" title="Lihat Detail & Edit">
-                <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+              <button onclick="openEditTxModal('${t.tx_id}')" class="w-6 h-6 rounded-lg bg-white border border-slate-200 text-[#1565c0] hover:bg-blue-50 flex items-center justify-center transition active:scale-95" title="Lihat Detail & Edit">
+                <i class="fa-solid fa-pen-to-square text-[9px]"></i>
               </button>
-              <button onclick="confirmDeleteTransaction('${t.tx_id}')" class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-rose-500 hover:bg-rose-50 flex items-center justify-center transition" title="Hapus">
-                <i class="fa-solid fa-trash-can text-[10px]"></i>
+              <button onclick="confirmDeleteTransaction('${t.tx_id}')" class="w-6 h-6 rounded-lg bg-white border border-slate-200 text-rose-500 hover:bg-rose-50 flex items-center justify-center transition active:scale-95" title="Hapus">
+                <i class="fa-solid fa-trash-can text-[9px]"></i>
               </button>
             </div>
+
           </div>
         `;
       });
 
       container.innerHTML = html;
+    }
+
+    // Fungsi Cepat: Lunasi Seluruh Hutang
+    function quickPayFullDebt() {
+      if (!state.activeContactKey) return;
+      const allContacts = getGroupedContacts();
+      const contact = allContacts.find(c => c.key === state.activeContactKey);
+      if (!contact) return;
+
+      if (contact.sisa <= 0) {
+        showToast("Hutang pelanggan ini sudah lunas!", "info");
+        return;
+      }
+
+      showCustomConfirm(
+        "Lunasi Seluruh Hutang?",
+        `Catat pelunasan penuh sebesar ${formatRupiah(contact.sisa)} untuk ${contact.nama}?`,
+        async () => {
+          showGlobalLoader("Melunasi Hutang...", `Mencatat pelunasan ${contact.nama}...`, "fa-circle-check");
+          const payType = contact.tipe === "piutang" ? "bayar_piutang" : "bayar_hutang";
+          const today = new Date().toISOString().split("T")[0];
+
+          try {
+            const response = await fetch(state.scriptUrl, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({
+                action: "add_transaction",
+                user_id: state.currentUser.user_id,
+                tipe: payType,
+                nama_kontak: contact.nama,
+                nominal: contact.sisa,
+                jatuh_tempo: today,
+                catatan: "Pelunasan Penuh (Lunas)"
+              })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+              showToast("Hutang berhasil dilunasi penuh!", "success");
+              await fetchTransactions();
+            } else {
+              showToast(result.message || "Gagal melunasi hutang", "error");
+            }
+          } catch (e) {
+            showToast("Kesalahan jaringan saat melunasi", "error");
+          } finally {
+            hideGlobalLoader();
+          }
+        }
+      );
     }
 
     function openAddTransactionModal() {
