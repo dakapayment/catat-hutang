@@ -786,7 +786,8 @@
 
     let state = {
       scriptUrl: SCRIPT_URL,
-      currentUser: JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null"),
+      // Menggunakan localStorage agar sesi tetap tersimpan meskipun browser ditutup
+      currentUser: JSON.parse(localStorage.getItem(SESSION_KEY) || "null"),
       transactions: [],
       filterCategory: "semua",
       sortDescending: true, // Default: Hutang terbanyak di atas
@@ -1070,7 +1071,8 @@
 
         if (result.success) {
           state.currentUser = result.user;
-          sessionStorage.setItem(SESSION_KEY, JSON.stringify(result.user));
+          // Simpan sesi secara permanen di perangkat pengguna
+          localStorage.setItem(SESSION_KEY, JSON.stringify(result.user));
           showToast(result.message || "Berhasil masuk!", "success");
           showMainApp();
         } else {
@@ -1864,7 +1866,8 @@
         const result = await response.json();
         if (result.success) {
           state.currentUser = result.user;
-          sessionStorage.setItem(SESSION_KEY, JSON.stringify(result.user));
+          // Perbarui data pengguna di penyimpanan permanen
+          localStorage.setItem(SESSION_KEY, JSON.stringify(result.user));
           showToast("Profil berhasil diperbarui", "success");
           initApp();
         } else {
@@ -1882,7 +1885,8 @@
         "Keluar Akun?",
         "Sesi Anda akan diakhiri. Anda dapat masuk kembali kapan saja.",
         () => {
-          sessionStorage.removeItem(SESSION_KEY);
+          // Hanya hapus sesi ketika pengguna benar-benar menekan tombol Logout
+          localStorage.removeItem(SESSION_KEY);
           state.currentUser = null;
           state.transactions = [];
           state.activeContactKey = null;
