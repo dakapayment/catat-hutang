@@ -40,11 +40,24 @@
       -webkit-tap-highlight-color: transparent;
     }
     ::-webkit-scrollbar {
-      display: none;
+      width: 6px;
+      height: 6px;
     }
-    body {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    ::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    @media (max-width: 768px) {
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      body {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
     }
     
     #splash-intro {
@@ -65,7 +78,7 @@
     }
   </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-800 font-sans min-h-screen flex flex-col antialiased pb-24">
+<body class="bg-[#f8fafc] text-slate-800 font-sans min-h-screen flex flex-col antialiased pb-20 md:pb-8">
 
   <!-- Splash Intro 0.1 Detik Logo DAKA ECOSYSTEM -->
   <div id="splash-intro">
@@ -103,7 +116,7 @@
   </div>
 
   <!-- Toast Notification Pop-up -->
-  <div id="toast" class="fixed top-4 inset-x-4 sm:inset-x-auto sm:right-4 z-50 transform -translate-y-20 transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm max-w-sm pointer-events-none bg-white border-slate-200 mx-auto">
+  <div id="toast" class="fixed top-4 inset-x-4 sm:inset-x-auto sm:right-6 z-50 transform -translate-y-24 transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm max-w-sm pointer-events-none bg-white border-slate-200 mx-auto">
     <i id="toast-icon" class="fa-solid fa-circle-check text-base text-[#1565c0]"></i>
     <span id="toast-message" class="font-medium text-slate-700 flex-1"></span>
   </div>
@@ -118,39 +131,72 @@
       <p id="confirm-desc" class="text-xs text-slate-500 mb-5 leading-relaxed">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
       <div class="flex gap-2.5">
         <button id="confirm-btn-cancel" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition">Batal</button>
-        <button id="confirm-btn-ok" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-sm transition">Ya, Hapus</button>
+        <button id="confirm-btn-ok" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-sm transition">Ya, Lanjutkan</button>
       </div>
     </div>
   </div>
 
-  <!-- Header Aplikasi Ringkas -->
-  <header class="sticky top-0 z-30 bg-white border-b border-slate-200/80 px-4 py-3">
-    <div class="max-w-md sm:max-w-xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-[#1565c0] flex items-center justify-center text-white shadow-sm">
-          <svg class="w-4 h-4" viewBox="0 0 48 48" fill="none">
+  <!-- Header Aplikasi Responsif (Desktop & Mobile) -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-3.5 sm:px-4 py-2.5 sm:py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+      
+      <!-- Brand Logo & Name -->
+      <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#1565c0] flex items-center justify-center text-white shadow-sm shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 48 48" fill="none">
             <path d="M12 8H26C33.732 8 40 14.268 40 22C40 29.732 33.732 36 26 36H12V8Z" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="26" cy="22" r="4.5" fill="currentColor"/>
           </svg>
         </div>
-        <div>
-          <span class="font-extrabold text-sm tracking-tight text-slate-900">DAKA ECOSYSTEM</span>
-          <span class="block text-[10px] text-slate-400 font-medium leading-none">Buku Catatan Hutang</span>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 truncate">DAKA ECOSYSTEM</span>
+            <span class="hidden md:inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-[#1565c0]">Desktop Workspace</span>
+          </div>
+          <span class="block text-[10px] text-slate-400 font-medium leading-none mt-0.5 truncate">Buku Catatan Hutang & Piutang</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-1.5">
-        <button onclick="fetchTransactions()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition" title="Muat Ulang Data">
+      <!-- Desktop Nav Tabs (HANYA tampil di Layar Komputer / Laptop) -->
+      <div id="desktop-nav-tabs" class="hidden md:flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl border border-slate-200">
+        <button id="desk-btn-hutang" onclick="navigateTo('hutang')" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white text-[#1565c0] shadow-xs transition">
+          <i class="fa-solid fa-book-bookmark text-xs"></i>
+          <span>Buku Hutang</span>
+        </button>
+        <button id="desk-btn-akun" onclick="navigateTo('akun')" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+          <i class="fa-solid fa-circle-user text-xs"></i>
+          <span>Akun Saya</span>
+        </button>
+      </div>
+
+      <!-- Action Bar Header (Rapi di HP & Desktop) -->
+      <div class="flex items-center gap-2 shrink-0">
+        <!-- Desktop Quick Button Catat Utang (Khusus Layar Lebar) -->
+        <button onclick="openAddTransactionModal()" class="hidden md:inline-flex items-center gap-2 bg-[#fbbf24] hover:bg-[#f59e0b] active:scale-95 text-slate-900 font-extrabold text-xs px-4 py-2 rounded-xl shadow-sm transition">
+          <i class="fa-solid fa-plus text-xs"></i>
+          <span>Catat Utang Baru</span>
+        </button>
+
+        <!-- Profil Mini HP: Bersih, Rapi & Dapat Diklik untuk Buka Akun -->
+        <button onclick="navigateTo('akun')" id="mobile-header-profile" class="md:hidden flex items-center gap-1.5 py-1 pl-2.5 pr-1 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200/80 transition active:scale-95" title="Buka Akun Saya">
+          <span id="mobile-header-nama" class="text-[11px] font-bold text-slate-700 max-w-[72px] truncate">Akun</span>
+          <div id="mobile-header-avatar" class="w-6 h-6 rounded-full bg-[#1565c0] text-white flex items-center justify-center font-extrabold text-[10px] shadow-xs">
+            U
+          </div>
+        </button>
+
+        <!-- Tombol Sinkronisasi / Refresh -->
+        <button onclick="fetchTransactions()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition active:scale-95 border border-slate-200/60" title="Muat Ulang Data">
           <i id="refresh-icon" class="fa-solid fa-arrows-rotate text-xs"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <main class="flex-1 max-w-md sm:max-w-xl w-full mx-auto p-3.5 sm:p-4">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3.5 sm:p-5 lg:p-6">
     
     <!-- Auth View (Jika Belum Login) -->
-    <div id="view-auth" class="w-full py-8">
+    <div id="view-auth" class="w-full py-8 max-w-md mx-auto">
       <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
         <div class="text-center mb-6">
           <div class="w-14 h-14 rounded-2xl bg-blue-50 text-[#1565c0] flex items-center justify-center mx-auto mb-3 border border-blue-100">
@@ -199,177 +245,207 @@
       </div>
     </div>
 
-    <!-- View Hutang (Tampilan Utama Mirip Gambar Referensi) -->
-    <div id="view-hutang" class="hidden space-y-3.5">
-      
-      <!-- Top Card: Utang Saya | Utang Pelanggan + Lihat Laporan -->
-      <div class="bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden">
-        <div class="grid grid-cols-2 divide-x divide-slate-100 p-4 sm:p-5">
-          
-          <!-- Kolom 1: Utang Saya (Hijau/Toska) -->
-          <div class="text-center sm:text-left pr-2">
-            <span class="text-xs text-slate-500 font-medium block mb-1">Utang Saya</span>
-            <div id="stat-utang-saya" class="text-lg sm:text-xl font-black text-emerald-600">Rp 0</div>
-            <span class="text-[10px] text-slate-400 mt-0.5 block" id="sub-utang-saya">0 tanggungan aktif</span>
-          </div>
-
-          <!-- Kolom 2: Utang Pelanggan (Merah) -->
-          <div class="text-center sm:text-right pl-2">
-            <span class="text-xs text-slate-500 font-medium block mb-1">Utang Pelanggan</span>
-            <div id="stat-utang-pelanggan" class="text-lg sm:text-xl font-black text-rose-600">Rp 0</div>
-            <span class="text-[10px] text-slate-400 mt-0.5 block" id="sub-utang-pelanggan">0 orang berhutang</span>
-          </div>
-
-        </div>
-
-        <!-- Tombol Bawah Card: Lihat Laporan Utang -->
-        <button onclick="openReportModal()" class="w-full border-t border-slate-100 px-4 py-3 bg-slate-50/50 hover:bg-slate-100/80 flex items-center justify-between text-slate-700 transition">
-          <div class="flex items-center gap-2.5">
-            <div class="w-7 h-7 rounded-lg bg-slate-800 text-white flex items-center justify-center text-xs shadow-xs">
-              <i class="fa-solid fa-chart-simple"></i>
-            </div>
-            <span class="text-xs sm:text-sm font-semibold text-slate-800">Lihat Laporan Utang</span>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
-        </button>
-      </div>
-
-      <!-- Search, Counter, & Actions Bar (Urutkan & Unduh) -->
-      <div class="flex items-center justify-between gap-3 pt-1">
-        <!-- Search & Counter -->
-        <div class="relative flex-1">
-          <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-xs">
-            <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
-            <input type="text" id="search-input" oninput="renderContactsList()" placeholder="Cari pelanggan / kontak..." class="w-full text-xs text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent">
-            <span id="counter-pelanggan" class="text-[11px] font-semibold text-slate-400 shrink-0">0 Kontak</span>
-          </div>
-        </div>
-
-        <!-- Tombol Aksi: Urutkan & Unduh -->
-        <div class="flex items-center gap-3 shrink-0">
-          <button onclick="toggleSortOrder()" class="flex flex-col items-center justify-center text-slate-600 hover:text-[#1565c0] transition">
-            <i class="fa-solid fa-arrow-down-up-across-line text-sm"></i>
-            <span class="text-[10px] font-medium mt-0.5" id="label-sort">Urutkan</span>
-          </button>
-          <button onclick="exportToCSV()" class="flex flex-col items-center justify-center text-slate-600 hover:text-[#1565c0] transition" title="Unduh Rekap CSV">
-            <i class="fa-solid fa-download text-sm"></i>
-            <span class="text-[10px] font-medium mt-0.5">Unduh</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Filter Horizontal Kapsul (Pill Chips) -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 scrollbar-none text-xs">
-        <button onclick="setFilterCategory('semua')" id="pill-semua" class="px-3.5 py-1.5 rounded-full font-bold bg-[#0284c7] text-white shadow-xs shrink-0 transition">
-          Semua
-        </button>
-        <button onclick="setFilterCategory('tempo_hari_ini')" id="pill-tempo-hari-ini" class="px-3.5 py-1.5 rounded-full font-medium bg-slate-100 text-slate-600 shrink-0 hover:bg-slate-200 transition">
-          Jatuh Tempo Hari Ini
-        </button>
-        <button onclick="setFilterCategory('lewat_tempo')" id="pill-lewat-tempo" class="px-3.5 py-1.5 rounded-full font-medium bg-slate-100 text-slate-600 shrink-0 hover:bg-slate-200 transition">
-          Lewat Jatuh Tempo
-        </button>
-        <button onclick="setFilterCategory('piutang')" id="pill-piutang" class="px-3.5 py-1.5 rounded-full font-medium bg-slate-100 text-slate-600 shrink-0 hover:bg-slate-200 transition">
-          Utang Pelanggan
-        </button>
-        <button onclick="setFilterCategory('hutang')" id="pill-hutang" class="px-3.5 py-1.5 rounded-full font-medium bg-slate-100 text-slate-600 shrink-0 hover:bg-slate-200 transition">
-          Utang Saya
-        </button>
-      </div>
-
-      <!-- Daftar Kontak (Tampilan List Bersih Mirip Gambar) -->
-      <div class="bg-white border border-slate-200/90 rounded-2xl shadow-sm divide-y divide-slate-100 overflow-hidden" id="contacts-container">
-        <!-- Diisi secara dinamis oleh JavaScript -->
-      </div>
-
-    </div>
-
-    <!-- View Detail Kontak (Halaman Mutasi saat Kontak Diklik) -->
-    <div id="view-detail-kontak" class="hidden space-y-4">
-      
-      <!-- Top Action Bar Detail -->
-      <div class="flex items-center justify-between gap-2">
-        <button onclick="backToHutangList()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-[#1565c0] font-semibold text-xs shadow-xs transition">
-          <i class="fa-solid fa-arrow-left"></i>
-          <span>Kembali</span>
-        </button>
-
-        <div class="flex items-center gap-2">
-          <button onclick="openPayModalForContact()" class="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition">
-            <i class="fa-solid fa-hand-holding-dollar"></i>
-            <span>Bayar / Cicil</span>
-          </button>
-          <button onclick="openAddDebtForContact()" class="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-[#1565c0] hover:bg-[#0d47a1] text-white font-bold text-xs shadow-xs transition">
-            <i class="fa-solid fa-plus"></i>
-            <span>Tambah</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Overview Tagihan Kontak -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-        <div class="flex items-center gap-3.5 mb-3">
-          <div id="detail-contact-avatar" class="w-12 h-12 rounded-full bg-[#38bdf8] text-white font-bold text-lg flex items-center justify-center shadow-xs shrink-0">
-            U
-          </div>
-          <div class="min-w-0 flex-1">
-            <h3 id="detail-contact-name" class="text-base font-extrabold text-slate-900 truncate uppercase">NAMA KONTAK</h3>
-            <div class="flex items-center gap-2 mt-0.5">
-              <span id="detail-contact-badge-tipe" class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase bg-blue-50 text-[#1565c0]">
-                Utang Pelanggan
-              </span>
-              <span id="detail-contact-badge-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase bg-amber-50 text-amber-800">
-                Belum Lunas
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-          <div>
-            <span class="text-[10px] uppercase font-bold text-slate-400 block">Sisa Tagihan</span>
-            <div id="detail-contact-sisa" class="text-xl font-black text-slate-900">Rp 0</div>
-          </div>
-          <div class="text-right text-[11px] text-slate-500">
-            <span id="detail-contact-subinfo" class="block">Total: Rp 0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Riwayat Mutasi Transaksi -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-          <span class="text-xs font-bold text-slate-800">Riwayat Mutasi & Pembayaran</span>
-          <span id="detail-tx-count" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">0 Catatan</span>
-        </div>
-        <div id="detail-tx-container" class="space-y-2.5">
-          <!-- Diisi via JavaScript -->
-        </div>
-      </div>
-
-    </div>
-
-    <!-- View Akun -->
-    <div id="view-akun" class="hidden space-y-4">
-      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+    <!-- Mode Hutang Terpadu: Pada Mobile (Master ATAU Detail), Pada Laptop (Master DAN Detail Bersisian) -->
+    <div id="view-hutang-root" class="hidden">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-5 lg:gap-6 items-start">
         
-        <div class="flex items-center gap-4 pb-4 border-b border-slate-100">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#1565c0] to-sky-400 flex items-center justify-center text-white font-extrabold text-2xl shadow-sm" id="profile-avatar">
+        <!-- KOLOM MASTER (Kiri): Ringkasan, Filter, & Daftar Kontak -->
+        <div id="col-master-list" class="w-full md:col-span-5 lg:col-span-5 space-y-3.5 max-w-md mx-auto md:max-w-none">
+          
+          <!-- Top Card: Utang Saya | Utang Pelanggan + Lihat Laporan -->
+          <div class="bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden">
+            <div class="grid grid-cols-2 divide-x divide-slate-100 p-4 sm:p-5">
+              
+              <!-- Kolom 1: Utang Saya (Hijau/Toska) -->
+              <div class="text-center sm:text-left pr-2">
+                <span class="text-xs text-slate-500 font-medium block mb-1">Utang Saya</span>
+                <div id="stat-utang-saya" class="text-lg sm:text-xl font-black text-emerald-600">Rp 0</div>
+                <span class="text-[10px] text-slate-400 mt-0.5 block" id="sub-utang-saya">0 tanggungan aktif</span>
+              </div>
+
+              <!-- Kolom 2: Utang Pelanggan (Merah) -->
+              <div class="text-center sm:text-right pl-2">
+                <span class="text-xs text-slate-500 font-medium block mb-1">Utang Pelanggan</span>
+                <div id="stat-utang-pelanggan" class="text-lg sm:text-xl font-black text-rose-600">Rp 0</div>
+                <span class="text-[10px] text-slate-400 mt-0.5 block" id="sub-utang-pelanggan">0 orang berhutang</span>
+              </div>
+
+            </div>
+
+            <!-- Tombol Bawah Card: Lihat Laporan Utang -->
+            <button onclick="openReportModal()" class="w-full border-t border-slate-100 px-4 py-3 bg-slate-50/50 hover:bg-slate-100/80 flex items-center justify-between text-slate-700 transition">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-slate-800 text-white flex items-center justify-center text-xs shadow-xs">
+                  <i class="fa-solid fa-chart-simple"></i>
+                </div>
+                <span class="text-xs sm:text-sm font-semibold text-slate-800">Lihat Laporan Utang</span>
+              </div>
+              <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+            </button>
+          </div>
+
+          <!-- Search, Counter, & Actions Bar (Urutkan & Unduh) -->
+          <div class="flex items-center justify-between gap-3 pt-1">
+            <!-- Search & Counter -->
+            <div class="relative flex-1">
+              <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-xs">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+                <input type="text" id="search-input" oninput="renderContactsList()" placeholder="Cari pelanggan / kontak..." class="w-full text-xs text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent">
+                <span id="counter-pelanggan" class="text-[11px] font-semibold text-slate-400 shrink-0">0 Pelanggan</span>
+              </div>
+            </div>
+
+            <!-- Tombol Aksi: Urutkan & Unduh -->
+            <div class="flex items-center gap-3 shrink-0">
+              <button onclick="toggleSortOrder()" class="flex flex-col items-center justify-center text-slate-600 hover:text-[#1565c0] transition">
+                <i class="fa-solid fa-arrow-down-up-across-line text-sm"></i>
+                <span class="text-[10px] font-medium mt-0.5" id="label-sort">Urutkan</span>
+              </button>
+              <button onclick="exportToCSV()" class="flex flex-col items-center justify-center text-slate-600 hover:text-[#1565c0] transition" title="Unduh Rekap CSV">
+                <i class="fa-solid fa-download text-sm"></i>
+                <span class="text-[10px] font-medium mt-0.5">Unduh</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Horizontal Kapsul (Pill Chips) -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 scrollbar-none text-xs">
+            <button onclick="setFilterCategory('semua')" id="pill-semua" class="px-3.5 py-1.5 rounded-full font-bold bg-[#0284c7] text-white shadow-xs shrink-0 transition">
+              Semua
+            </button>
+            <button onclick="setFilterCategory('tempo_hari_ini')" id="pill-tempo-hari-ini" class="px-3.5 py-1.5 rounded-full font-medium bg-slate-100 text-slate-600 shrink-0 hover:bg-slate-200 transition">
+              Jatuh Tempo Hari Ini
+            </button>
+            <button onclick="setFilterCategory('lewat_tempo')" id="pill-lewat-tempo" class="px-3.5 py-1.5 rounded-full font-medium bg-slate-100 text-slate-600 shrink-0 hover:bg-slate-200 transition">
+              Lewat Jatuh Tempo
+            </button>
+            <button onclick="setFilterCategory('piutang')" id="pill-piutang" class="px-3.5 py-1.5 rounded-full font-medium bg-slate-100 text-slate-600 shrink-0 hover:bg-slate-200 transition">
+              Utang Pelanggan
+            </button>
+            <button onclick="setFilterCategory('hutang')" id="pill-hutang" class="px-3.5 py-1.5 rounded-full font-medium bg-slate-100 text-slate-600 shrink-0 hover:bg-slate-200 transition">
+              Utang Saya
+            </button>
+          </div>
+
+          <!-- Daftar Kontak (Tampilan List Bersih Mirip Gambar) -->
+          <div class="bg-white border border-slate-200/90 rounded-2xl shadow-sm divide-y divide-slate-100 overflow-hidden" id="contacts-container">
+            <!-- Diisi secara dinamis oleh JavaScript -->
+          </div>
+
+        </div>
+
+        <!-- KOLOM DETAIL (Kanan): Tampil di layar Laptop bersisian, atau satu layar penuh di HP saat kontak diklik -->
+        <div id="col-detail-pane" class="w-full md:col-span-7 lg:col-span-7 space-y-4 max-w-md mx-auto md:max-w-none hidden md:block">
+          
+          <!-- Placeholder Bila di Layar Komputer Belum Ada Kontak yang Dipilih -->
+          <div id="detail-empty-placeholder" class="bg-white border border-dashed border-slate-200 rounded-3xl p-12 text-center flex flex-col items-center justify-center min-h-[380px] hidden">
+            <div class="w-16 h-16 rounded-2xl bg-blue-50 text-[#1565c0] flex items-center justify-center text-2xl mb-3">
+              <i class="fa-solid fa-address-book"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-800 mb-1">Pilih Kontak Pelanggan</h3>
+            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Klik salah satu kontak di kolom sebelah kiri untuk melihat histori mutasi transaksi, tambah utang, dan pembayaran.</p>
+          </div>
+
+          <!-- Konten Aktif Detail Kontak -->
+          <div id="detail-active-wrapper" class="space-y-4">
+            
+            <!-- Top Action Bar Detail -->
+            <div class="flex items-center justify-between gap-2 bg-white md:bg-transparent p-2.5 md:p-0 rounded-2xl border md:border-0 border-slate-200">
+              <!-- Tombol Kembali: Tampil di HP, Sembunyi Otomatis di Layar Laptop -->
+              <button onclick="backToHutangList()" id="btn-back-mobile" class="md:hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 text-slate-700 hover:text-[#1565c0] font-semibold text-xs transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Kembali</span>
+              </button>
+
+              <div class="hidden md:flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Rincian Pelanggan</span>
+              </div>
+
+              <!-- Tombol Aksi Transaksi -->
+              <div class="flex items-center gap-2 ml-auto">
+                <button onclick="openPayModalForContact()" class="inline-flex items-center gap-1 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition">
+                  <i class="fa-solid fa-hand-holding-dollar"></i>
+                  <span>Bayar / Cicil</span>
+                </button>
+                <button onclick="openAddDebtForContact()" class="inline-flex items-center gap-1 px-3.5 py-2 rounded-xl bg-[#1565c0] hover:bg-[#0d47a1] text-white font-bold text-xs shadow-xs transition">
+                  <i class="fa-solid fa-plus"></i>
+                  <span>Tambah Utang</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Overview Tagihan Kontak -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+              <div class="flex items-center gap-4 mb-4">
+                <div id="detail-contact-avatar" class="w-14 h-14 rounded-full bg-[#38bdf8] text-white font-bold text-xl flex items-center justify-center shadow-xs shrink-0">
+                  U
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h3 id="detail-contact-name" class="text-lg font-black text-slate-900 truncate uppercase">NAMA KONTAK</h3>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span id="detail-contact-badge-tipe" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase bg-blue-50 text-[#1565c0]">
+                      Utang Pelanggan
+                    </span>
+                    <span id="detail-contact-badge-status" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase bg-amber-50 text-amber-800">
+                      Belum Lunas
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                <div>
+                  <span class="text-[10px] uppercase font-bold text-slate-400 block">Sisa Tagihan Aktif</span>
+                  <div id="detail-contact-sisa" class="text-2xl font-black text-slate-900">Rp 0</div>
+                </div>
+                <div class="text-right text-xs text-slate-500">
+                  <span id="detail-contact-subinfo" class="block font-medium">Total: Rp 0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Riwayat Mutasi Transaksi -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3.5">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <span class="text-xs sm:text-sm font-bold text-slate-800">Riwayat Mutasi & Pembayaran</span>
+                  <p class="text-[11px] text-slate-400">Catatan kronologis penambahan dan pelunasan</p>
+                </div>
+                <span id="detail-tx-count" class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600">0 Catatan</span>
+              </div>
+              <div id="detail-tx-container" class="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
+                <!-- Diisi via JavaScript -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- View Akun (Menyesuaikan Otomatis di HP & Laptop) -->
+    <div id="view-akun" class="hidden max-w-xl mx-auto space-y-4">
+      <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 shadow-sm">
+        
+        <div class="flex items-center gap-4 pb-5 border-b border-slate-100">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#1565c0] to-sky-400 flex items-center justify-center text-white font-extrabold text-2xl shadow-sm" id="profile-avatar">
             U
           </div>
           <div class="flex-1 min-w-0">
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-[#1565c0] mb-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#1565c0] animate-pulse"></span> Member DAKA
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-[#1565c0] mb-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#1565c0] animate-pulse"></span> Member Terverifikasi DAKA
             </span>
-            <h3 id="profile-nama" class="text-base font-bold text-slate-900 truncate">Nama Pengguna</h3>
+            <h3 id="profile-nama" class="text-lg font-bold text-slate-900 truncate">Nama Pengguna</h3>
             <p id="profile-email" class="text-xs text-slate-400 truncate">email@example.com</p>
           </div>
         </div>
 
-        <div class="py-4 space-y-3">
+        <div class="py-5 space-y-3.5">
           <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Pengaturan Akun</span>
           
-          <form onsubmit="handleProfileUpdate(event)" class="space-y-3">
+          <form onsubmit="handleProfileUpdate(event)" class="space-y-3.5">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Ubah Nama Pengguna</label>
               <input type="text" id="edit-profile-nama" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]">
@@ -377,17 +453,17 @@
 
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Ganti Sandi (Opsional)</label>
-              <input type="password" id="edit-profile-password" placeholder="Kosongkan jika tidak diubah" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]">
+              <input type="password" id="edit-profile-password" placeholder="Kosongkan jika tidak ingin diubah" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-[#1565c0]">
             </div>
 
-            <button type="submit" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-[#1565c0] font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5 border border-slate-200">
+            <button type="submit" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-[#1565c0] font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 border border-slate-200">
               <i class="fa-regular fa-floppy-disk"></i>
-              <span>Simpan Perubahan</span>
+              <span>Simpan Perubahan Akun</span>
             </button>
           </form>
         </div>
 
-        <div class="pt-3 border-t border-slate-100">
+        <div class="pt-4 border-t border-slate-100">
           <button onclick="triggerLogout()" class="w-full py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs transition flex items-center justify-center gap-2 border border-rose-100">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
             <span>Keluar dari Akun</span>
@@ -399,19 +475,19 @@
 
   </main>
 
-  <!-- Tombol Melayang FAB: + CATAT UTANG (Kuning-Oranye Persis Gambar) -->
-  <div id="fab-container" class="fixed right-4 bottom-20 z-40">
+  <!-- Tombol Melayang FAB: Khusus di Layar Ponsel (< md) -->
+  <div id="fab-container" class="md:hidden fixed right-4 bottom-20 z-40">
     <button onclick="openAddTransactionModal()" class="flex items-center gap-2 bg-[#fbbf24] hover:bg-[#f59e0b] active:scale-95 text-slate-900 font-extrabold text-xs sm:text-sm px-5 py-3.5 rounded-full shadow-lg shadow-amber-500/25 transition">
       <i class="fa-solid fa-plus text-sm"></i>
       <span>CATAT UTANG</span>
     </button>
   </div>
 
-  <!-- Menu Bar Bawah (Bottom Navigation Bar) Khusus HP & Laptop -->
-  <nav id="bottom-navbar" class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_16px_rgba(0,0,0,0.04)]">
-    <div class="max-w-md sm:max-w-xl mx-auto grid grid-cols-2 py-2 px-6">
+  <!-- Menu Bar Bawah (Bottom Navigation Bar) Khusus Layar HP (< md) -->
+  <nav id="bottom-navbar" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_16px_rgba(0,0,0,0.04)]">
+    <div class="max-w-md mx-auto grid grid-cols-2 py-2 px-6">
       
-      <!-- Tab Hutang -->
+      <!-- Tab Hutang Mobile -->
       <button id="nav-btn-hutang" onclick="navigateTo('hutang')" class="flex flex-col items-center justify-center gap-1 py-1 text-[#1565c0] transition group">
         <div class="w-8 h-8 rounded-full flex items-center justify-center bg-blue-50 group-hover:scale-105 transition">
           <i class="fa-solid fa-book-bookmark text-sm"></i>
@@ -419,7 +495,7 @@
         <span class="text-[11px] font-bold tracking-tight">Hutang</span>
       </button>
 
-      <!-- Tab Akun -->
+      <!-- Tab Akun Mobile -->
       <button id="nav-btn-akun" onclick="navigateTo('akun')" class="flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-700 transition group">
         <div class="w-8 h-8 rounded-full flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-105 transition">
           <i class="fa-solid fa-circle-user text-base"></i>
@@ -432,7 +508,7 @@
 
   <!-- Modal Catat Utang Baru -->
   <div id="modal-add-tx" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-3xl p-5 max-w-sm w-full shadow-2xl relative">
+    <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 max-w-sm w-full shadow-2xl relative">
       <div class="flex items-center justify-between mb-4">
         <div>
           <h3 class="text-base font-extrabold text-slate-900">Catat Utang Baru</h3>
@@ -491,7 +567,7 @@
 
   <!-- Modal Bayar / Cicil -->
   <div id="modal-pay" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-3xl p-5 max-w-sm w-full shadow-2xl relative">
+    <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 max-w-sm w-full shadow-2xl relative">
       <div class="flex items-center justify-between mb-3">
         <div>
           <h3 class="text-base font-extrabold text-slate-900">Catat Pembayaran / Cicil</h3>
@@ -542,7 +618,7 @@
 
   <!-- Modal Tambah Utang Kontak -->
   <div id="modal-add-debt" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-3xl p-5 max-w-sm w-full shadow-2xl relative">
+    <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 max-w-sm w-full shadow-2xl relative">
       <div class="flex items-center justify-between mb-3">
         <div>
           <h3 class="text-base font-extrabold text-slate-900">Tambah Utang</h3>
@@ -585,7 +661,7 @@
 
   <!-- Modal Lihat Laporan Utang -->
   <div id="modal-report" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-3xl p-5 max-w-sm w-full shadow-2xl relative">
+    <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 max-w-sm w-full shadow-2xl relative">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-lg bg-slate-800 text-white flex items-center justify-center text-xs">
@@ -625,7 +701,6 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwH9h0XFMbDBSi6VkPDgdl0QAmuPDkwtbXDOS2rZMhIFLtFn6s4rfwfhgVTtV1UIHQy/exec";
     const SESSION_KEY = "daka_active_user";
-    const DEMO_TX_KEY = "daka_demo_transactions";
 
     let state = {
       scriptUrl: SCRIPT_URL,
@@ -708,6 +783,7 @@
       }, 100);
 
       initApp();
+      window.addEventListener("resize", syncResponsiveLayout);
     });
 
     function initApp() {
@@ -720,25 +796,75 @@
 
     function showAuthView() {
       document.getElementById("view-auth").classList.remove("hidden");
-      document.getElementById("view-hutang").classList.add("hidden");
-      document.getElementById("view-detail-kontak").classList.add("hidden");
+      document.getElementById("view-hutang-root").classList.add("hidden");
       document.getElementById("view-akun").classList.add("hidden");
       document.getElementById("bottom-navbar").classList.add("hidden");
       document.getElementById("fab-container").classList.add("hidden");
+      
+      const desktopTabs = document.getElementById("desktop-nav-tabs");
+      if (desktopTabs) desktopTabs.classList.add("hidden");
+      const mobileProfile = document.getElementById("mobile-header-profile");
+      if (mobileProfile) mobileProfile.classList.add("hidden");
     }
 
     function showMainApp() {
       document.getElementById("view-auth").classList.add("hidden");
       document.getElementById("bottom-navbar").classList.remove("hidden");
       document.getElementById("fab-container").classList.remove("hidden");
+      
+      // Pastikan tabs desktop hanya aktif pada breakpoint md ke atas
+      const desktopTabs = document.getElementById("desktop-nav-tabs");
+      if (desktopTabs) {
+        desktopTabs.className = "hidden md:flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl border border-slate-200";
+      }
 
-      document.getElementById("profile-nama").innerText = state.currentUser.nama || "-";
+      const mobileProfile = document.getElementById("mobile-header-profile");
+      if (mobileProfile) mobileProfile.classList.remove("hidden");
+
+      const fullName = state.currentUser.nama || "Pengguna";
+      const firstName = fullName.split(" ")[0];
+      const initial = fullName.charAt(0).toUpperCase();
+
+      document.getElementById("profile-nama").innerText = fullName;
       document.getElementById("profile-email").innerText = state.currentUser.email || "-";
       document.getElementById("edit-profile-nama").value = state.currentUser.nama || "";
-      document.getElementById("profile-avatar").innerText = (state.currentUser.nama || "U").charAt(0).toUpperCase();
+      document.getElementById("profile-avatar").innerText = initial;
+
+      // Update avatar mini di header HP
+      const mobileHeaderNama = document.getElementById("mobile-header-nama");
+      if (mobileHeaderNama) mobileHeaderNama.innerText = firstName;
+      const mobileHeaderAvatar = document.getElementById("mobile-header-avatar");
+      if (mobileHeaderAvatar) mobileHeaderAvatar.innerText = initial;
 
       navigateTo(state.activeTab || "hutang");
       fetchTransactions();
+    }
+
+    function syncResponsiveLayout() {
+      if (!state.currentUser) return;
+      const isDesktop = window.innerWidth >= 768;
+      const masterCol = document.getElementById("col-master-list");
+      const detailCol = document.getElementById("col-detail-pane");
+
+      if (state.activeTab === "hutang") {
+        if (isDesktop) {
+          // Mode Desktop: Selalu tampil berdampingan (Master & Detail)
+          masterCol.classList.remove("hidden");
+          detailCol.classList.remove("hidden");
+          renderActiveContactDetail();
+        } else {
+          // Mode Mobile: Salah satu tampil (Master ATAU Detail)
+          if (state.activeContactKey) {
+            masterCol.classList.add("hidden");
+            detailCol.classList.remove("hidden");
+            document.getElementById("fab-container").classList.add("hidden");
+          } else {
+            masterCol.classList.remove("hidden");
+            detailCol.classList.add("hidden");
+            document.getElementById("fab-container").classList.remove("hidden");
+          }
+        }
+      }
     }
 
     function navigateTo(tabName) {
@@ -748,33 +874,59 @@
       }
 
       state.activeTab = tabName;
-      const btnHutang = document.getElementById("nav-btn-hutang");
-      const btnAkun = document.getElementById("nav-btn-akun");
-      const viewHutang = document.getElementById("view-hutang");
-      const viewDetail = document.getElementById("view-detail-kontak");
+      const viewHutangRoot = document.getElementById("view-hutang-root");
       const viewAkun = document.getElementById("view-akun");
       const fab = document.getElementById("fab-container");
 
-      if (tabName === "hutang") {
-        viewHutang.classList.remove("hidden");
-        viewDetail.classList.add("hidden");
-        viewAkun.classList.add("hidden");
-        fab.classList.remove("hidden");
+      // Mobile bottom nav buttons
+      const btnHutang = document.getElementById("nav-btn-hutang");
+      const btnAkun = document.getElementById("nav-btn-akun");
 
+      // Desktop nav buttons
+      const deskBtnHutang = document.getElementById("desk-btn-hutang");
+      const deskBtnAkun = document.getElementById("desk-btn-akun");
+
+      if (tabName === "hutang") {
+        viewHutangRoot.classList.remove("hidden");
+        viewAkun.classList.add("hidden");
+
+        // Mobile Nav styling
         btnHutang.className = "flex flex-col items-center justify-center gap-1 py-1 text-[#1565c0] transition group";
         btnHutang.querySelector("div").className = "w-8 h-8 rounded-full flex items-center justify-center bg-blue-50 group-hover:scale-105 transition";
         btnAkun.className = "flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-700 transition group";
         btnAkun.querySelector("div").className = "w-8 h-8 rounded-full flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-105 transition";
+
+        // Desktop Nav styling
+        deskBtnHutang.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white text-[#1565c0] shadow-xs transition";
+        deskBtnAkun.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition";
+
+        // Styling Mobile Header Profile Pill
+        const mobileProfile = document.getElementById("mobile-header-profile");
+        if (mobileProfile) {
+          mobileProfile.className = "md:hidden flex items-center gap-1.5 py-1 pl-2.5 pr-1 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200/80 transition active:scale-95";
+        }
+
+        syncResponsiveLayout();
       } else {
-        viewHutang.classList.add("hidden");
-        viewDetail.classList.add("hidden");
+        viewHutangRoot.classList.add("hidden");
         viewAkun.classList.remove("hidden");
         fab.classList.add("hidden");
 
+        // Mobile Nav styling
         btnAkun.className = "flex flex-col items-center justify-center gap-1 py-1 text-[#1565c0] transition group";
         btnAkun.querySelector("div").className = "w-8 h-8 rounded-full flex items-center justify-center bg-blue-50 group-hover:scale-105 transition";
         btnHutang.className = "flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-700 transition group";
         btnHutang.querySelector("div").className = "w-8 h-8 rounded-full flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-105 transition";
+
+        // Desktop Nav styling
+        deskBtnAkun.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white text-[#1565c0] shadow-xs transition";
+        deskBtnHutang.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition";
+
+        // Highlight Mobile Header Profile Pill saat tab Akun aktif
+        const mobileProfile = document.getElementById("mobile-header-profile");
+        if (mobileProfile) {
+          mobileProfile.className = "md:hidden flex items-center gap-1.5 py-1 pl-2.5 pr-1 rounded-full bg-blue-50 border border-blue-200 text-[#1565c0] transition active:scale-95 shadow-xs";
+        }
       }
     }
 
@@ -871,7 +1023,7 @@
           state.transactions = result.data || [];
           calculateStats();
           renderContactsList();
-          if (state.activeContactKey) renderActiveContactDetail();
+          renderActiveContactDetail();
         } else {
           showToast(result.message || "Gagal mengambil data", "error");
         }
@@ -969,13 +1121,11 @@
 
       const netto = totalUtangPelanggan - totalUtangSaya;
 
-      // Card Header Sesuai Gambar
       document.getElementById("stat-utang-saya").innerText = formatRupiah(totalUtangSaya);
       document.getElementById("sub-utang-saya").innerText = countUtangSaya + " tanggungan aktif";
       document.getElementById("stat-utang-pelanggan").innerText = formatRupiah(totalUtangPelanggan);
       document.getElementById("sub-utang-pelanggan").innerText = countUtangPelanggan + " orang berhutang";
 
-      // Di Modal Laporan
       document.getElementById("rep-utang-saya").innerText = formatRupiah(totalUtangSaya);
       document.getElementById("rep-utang-pelanggan").innerText = formatRupiah(totalUtangPelanggan);
       document.getElementById("rep-netto").innerText = (netto >= 0 ? "+" : "") + formatRupiah(netto);
@@ -1006,6 +1156,11 @@
 
       document.getElementById("counter-pelanggan").innerText = `${filtered.length} Pelanggan`;
 
+      // Jika di layar desktop (>= 768px) dan belum ada yang dipilih, pilih kontak pertama secara otomatis
+      if (window.innerWidth >= 768 && !state.activeContactKey && filtered.length > 0) {
+        state.activeContactKey = filtered[0].key;
+      }
+
       if (filtered.length === 0) {
         container.innerHTML = `
           <div class="text-center py-10 px-4">
@@ -1013,28 +1168,27 @@
               <i class="fa-solid fa-users-slash"></i>
             </div>
             <h4 class="text-xs font-bold text-slate-700">Belum ada data pelanggan</h4>
-            <p class="text-[11px] text-slate-400 mt-0.5">Tekan tombol + CATAT UTANG di bawah untuk menambahkan</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Tekan tombol Catat Utang untuk menambahkan</p>
           </div>
         `;
+        renderActiveContactDetail();
         return;
       }
 
-      // Render Item Persis Seperti Screenshot
       let html = "";
       filtered.forEach((c) => {
         const isPiutang = c.tipe === "piutang";
         const initial = c.nama.charAt(0).toUpperCase();
-
-        // Teks label bawah nominal: Utang Pelanggan / Utang Saya
         const labelTipe = isPiutang ? "Utang Pelanggan" : "Utang Saya";
         const nominalColor = isPiutang ? "text-rose-600" : "text-emerald-600";
+        const isSelected = state.activeContactKey === c.key;
 
         html += `
-          <div onclick="openContactDetail('${c.key}')" class="p-3.5 hover:bg-slate-50 transition cursor-pointer flex items-center justify-between gap-3 active:bg-slate-100">
+          <div onclick="openContactDetail('${c.key}')" class="p-3.5 transition cursor-pointer flex items-center justify-between gap-3 ${isSelected ? 'bg-blue-50/90 border-l-4 border-[#1565c0]' : 'hover:bg-slate-50 active:bg-slate-100'}">
             
             <!-- Avatar Inisial Bulat Biru & Nama -->
             <div class="flex items-center gap-3 min-w-0">
-              <div class="w-10 h-10 rounded-full bg-[#38bdf8] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
+              <div class="w-10 h-10 rounded-full ${isSelected ? 'bg-[#1565c0]' : 'bg-[#38bdf8]'} text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs transition">
                 ${initial}
               </div>
               <div class="truncate">
@@ -1080,6 +1234,7 @@
       });
 
       renderContactsList();
+      renderActiveContactDetail();
     }
 
     function toggleSortOrder() {
@@ -1091,30 +1246,42 @@
 
     function openContactDetail(contactKey) {
       state.activeContactKey = contactKey;
-      document.getElementById("view-hutang").classList.add("hidden");
-      document.getElementById("view-detail-kontak").classList.remove("hidden");
-      document.getElementById("fab-container").classList.add("hidden");
+      renderContactsList(); // Untuk mengaktifkan highlight biru pada item list
       renderActiveContactDetail();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      syncResponsiveLayout();
+
+      if (window.innerWidth < 768) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     }
 
     function backToHutangList() {
       state.activeContactKey = null;
-      document.getElementById("view-detail-kontak").classList.add("hidden");
-      document.getElementById("view-hutang").classList.remove("hidden");
-      document.getElementById("fab-container").classList.remove("hidden");
       renderContactsList();
+      syncResponsiveLayout();
     }
 
     function renderActiveContactDetail() {
-      if (!state.activeContactKey) return;
+      const placeholder = document.getElementById("detail-empty-placeholder");
+      const wrapper = document.getElementById("detail-active-wrapper");
+
+      if (!state.activeContactKey) {
+        if (placeholder) placeholder.classList.remove("hidden");
+        if (wrapper) wrapper.classList.add("hidden");
+        return;
+      }
+
       const allContacts = getGroupedContacts();
       const contact = allContacts.find(c => c.key === state.activeContactKey);
 
       if (!contact) {
-        backToHutangList();
+        if (placeholder) placeholder.classList.remove("hidden");
+        if (wrapper) wrapper.classList.add("hidden");
         return;
       }
+
+      if (placeholder) placeholder.classList.add("hidden");
+      if (wrapper) wrapper.classList.remove("hidden");
 
       const isPiutang = contact.tipe === "piutang";
       const isLunas = contact.isLunas;
@@ -1124,22 +1291,22 @@
 
       const badgeTipe = document.getElementById("detail-contact-badge-tipe");
       badgeTipe.innerText = isPiutang ? "Utang Pelanggan" : "Utang Saya";
-      badgeTipe.className = `text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${isPiutang ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'}`;
+      badgeTipe.className = `text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase ${isPiutang ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'}`;
 
       const badgeStatus = document.getElementById("detail-contact-badge-status");
       badgeStatus.innerText = isLunas ? "Lunas" : "Belum Lunas";
-      badgeStatus.className = `text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${isLunas ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}`;
+      badgeStatus.className = `text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase ${isLunas ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}`;
 
       const sisaEl = document.getElementById("detail-contact-sisa");
       sisaEl.innerText = formatRupiah(contact.sisa);
-      sisaEl.className = `text-xl font-black ${isLunas ? 'text-emerald-600' : (isPiutang ? 'text-rose-600' : 'text-emerald-600')}`;
+      sisaEl.className = `text-2xl font-black ${isLunas ? 'text-emerald-600' : (isPiutang ? 'text-rose-600' : 'text-emerald-600')}`;
 
-      document.getElementById("detail-contact-subinfo").innerText = `Total: ${formatRupiah(contact.totalPinjam)} | Bayar: ${formatRupiah(contact.totalBayar)}`;
+      document.getElementById("detail-contact-subinfo").innerText = `Total Pinjam: ${formatRupiah(contact.totalPinjam)} | Terbayar: ${formatRupiah(contact.totalBayar)}`;
       document.getElementById("detail-tx-count").innerText = `${contact.items.length} Catatan`;
 
       const container = document.getElementById("detail-tx-container");
       if (contact.items.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Belum ada riwayat transaksi.</p>`;
+        container.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">Belum ada riwayat mutasi transaksi.</p>`;
         return;
       }
 
@@ -1149,7 +1316,7 @@
         const dateStr = t.jatuh_tempo || (t.created_at ? t.created_at.split("T")[0] : "-");
 
         html += `
-          <div class="p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between gap-3">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-3 hover:bg-slate-100/60 transition">
             <div class="flex items-center gap-2.5 min-w-0">
               <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isPayment ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-[#1565c0]'}">
                 <i class="fa-solid ${isPayment ? 'fa-hand-holding-dollar' : 'fa-receipt'} text-xs"></i>
@@ -1160,8 +1327,8 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 shrink-0">
-              <span class="text-xs font-black ${isPayment ? 'text-emerald-600' : 'text-rose-600'}">
+            <div class="flex items-center gap-2.5 shrink-0">
+              <span class="text-xs sm:text-sm font-black ${isPayment ? 'text-emerald-600' : 'text-rose-600'}">
                 ${isPayment ? '-' : '+'} ${formatRupiah(t.nominal)}
               </span>
               <button onclick="confirmDeleteTransaction('${t.tx_id}')" class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-rose-500 hover:bg-rose-50 flex items-center justify-center transition" title="Hapus">
@@ -1228,6 +1395,7 @@
         if (result.success) {
           showToast("Catatan utang berhasil disimpan!", "success");
           closeAddTransactionModal();
+          state.activeContactKey = namaKontak.toLowerCase();
           await fetchTransactions();
         } else {
           showToast(result.message || "Gagal mencatat transaksi", "error");
@@ -1522,20 +1690,20 @@
       msgEl.innerText = message;
 
       if (type === "success") {
-        toast.className = "fixed top-4 inset-x-4 sm:inset-x-auto sm:right-4 z-50 transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm max-w-sm bg-white border-blue-200 text-[#1565c0] mx-auto";
+        toast.className = "fixed top-4 inset-x-4 sm:inset-x-auto sm:right-6 z-50 transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm max-w-sm bg-white border-blue-200 text-[#1565c0] mx-auto";
         iconEl.className = "fa-solid fa-circle-check text-base text-[#1565c0]";
       } else if (type === "error") {
-        toast.className = "fixed top-4 inset-x-4 sm:inset-x-auto sm:right-4 z-50 transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm max-w-sm bg-white border-rose-200 text-rose-600 mx-auto";
+        toast.className = "fixed top-4 inset-x-4 sm:inset-x-auto sm:right-6 z-50 transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm max-w-sm bg-white border-rose-200 text-rose-600 mx-auto";
         iconEl.className = "fa-solid fa-circle-xmark text-base text-rose-600";
       } else {
-        toast.className = "fixed top-4 inset-x-4 sm:inset-x-auto sm:right-4 z-50 transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm max-w-sm bg-white border-slate-200 text-slate-700 mx-auto";
+        toast.className = "fixed top-4 inset-x-4 sm:inset-x-auto sm:right-6 z-50 transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm max-w-sm bg-white border-slate-200 text-slate-700 mx-auto";
         iconEl.className = "fa-solid fa-circle-info text-base text-[#1565c0]";
       }
 
-      toast.classList.remove("-translate-y-20");
+      toast.classList.remove("-translate-y-24");
 
       setTimeout(() => {
-        toast.classList.add("-translate-y-20");
+        toast.classList.add("-translate-y-24");
       }, 3000);
     }
 
